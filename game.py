@@ -1,6 +1,7 @@
 import sys
 import pygame
 import os
+import random
 
 WIDTH = 1920
 HEIGHT = 1080
@@ -32,6 +33,9 @@ number_100_img = pygame.image.load(os.path.join(main_folder, "images/numbers/100
 fon_game_img = pygame.image.load(os.path.join(main_folder, "images/fon_game.jpeg"))
 hud_up_img = pygame.image.load(os.path.join(main_folder, "images/hud/hud_up.png"))
 hud_down_img = pygame.image.load(os.path.join(main_folder, "images/hud/hud_down.png"))
+zhila_med_img = pygame.image.load(os.path.join(main_folder, "images/med.png"))
+zhila_iron_img = pygame.image.load(os.path.join(main_folder, "images/iron.png"))
+zhila_isvestnyak_img = pygame.image.load(os.path.join(main_folder, "images/isvestnyak.png"))
 
 numbers_image = [number_0_img, number_10_img, number_20_img, number_30_img, number_40_img, number_50_img, number_60_img, number_70_img, number_80_img, number_90_img, number_100_img]
 
