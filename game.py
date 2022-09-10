@@ -214,9 +214,21 @@ def game():
             zhila_isvestnyak.set_pos((random.randint(30, WIDTH - 30), random.randint(30, HEIGHT - 30)))
         allSpites.add(zhila_isvestnyak)
 
+    ikonka_prut = Ikonka(ikonka_prut_img, (WIDTH / 2 + 100, 70), 1)
     ikonka_rotor = Ikonka(ikonka_rotor_img, (WIDTH / 2, 70), 1)
     ikonka_med = Ikonka(ikonka_med_img, (WIDTH / 2 - 50, 70), 1)
     ikonka_iron = Ikonka(ikonka_iron_img, (WIDTH / 2 + 50, 70), 1)
+    ikonka_beton = Ikonka(ikonka_beton_img, (WIDTH / 2 - 100, 70), 1)
+    ikonka_isvestnyak = Ikonka(ikonka_isvestnyak_img, (WIDTH / 2 + 150, 70), 1)
+    ikonka_kabel = Ikonka(ikonka_kabel_img, (WIDTH / 2 - 150, 70), 1)
+    ikonka_karkas = Ikonka(ikonka_karkas_img, (WIDTH / 2 + 200, 70), 1)
+    ikonka_motor = Ikonka(ikonka_motor_img, (WIDTH / 2 - 200, 70), 1)
+    ikonka_plastina = Ikonka(ikonka_plastina_img, (WIDTH / 2 + 250, 70), 1)
+    ikonka_provolka = Ikonka(ikonka_provolka_img, (WIDTH / 2 - 250, 70), 1)
+    ikonka_startor = Ikonka(ikonka_startor_img, (WIDTH / 2 + 300, 70), 1)
+    ikonka_ukr_plastina = Ikonka(ikonka_ukr_plastina_img, (WIDTH / 2 - 300, 70), 1)
+    ikonka_vint = Ikonka(ikonka_vint_img, (WIDTH / 2 + 350, 70), 1)
+    ikonka_ymnaya_obshivka = Ikonka(ikonka_ymnaya_obshivka_img, (WIDTH / 2 - 350, 70), 1)
 
     hud_up = Button(hud_up_img, (WIDTH / 2, HEIGHT / 2))
     hud_down = Button(hud_down_img, (WIDTH / 2, HEIGHT / 2))
@@ -224,7 +236,7 @@ def game():
     previos_btn = Button(hud_previos_img, (265, 70))
 
     ikonki = pygame.sprite.Group()
-    ikonki.add(ikonka_rotor, ikonka_med, ikonka_iron)
+    ikonki.add(ikonka_rotor, ikonka_med, ikonka_iron, ikonka_prut, ikonka_beton, ikonka_isvestnyak, ikonka_kabel, ikonka_karkas, ikonka_motor, ikonka_plastina, ikonka_provolka, ikonka_startor, ikonka_ukr_plastina, ikonka_vint, ikonka_ymnaya_obshivka)
     allSpites.add(hud_up, hud_down, ikonka_rotor, ikonka_med, ikonka_iron, next_btn, previos_btn)
     while True:
         screen.blit(fon_game_img, fon_game_img.get_rect())
