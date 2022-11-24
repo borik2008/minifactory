@@ -88,13 +88,23 @@ img_no_stroit = pygame.image.load(os.path.join(main_folder, "images/ne_stroit.pn
 
 spisok_zhil_image = [zhila_iron_img, zhila_isvestnyak_img, zhila_med_img]
 
+spisok_postroiki_image = [ikonka_asembler_image, ikonka_bur_image, ikonka_constructor_image, ikonka_razvetlitel_image, ikonka_soedenitel_image]
+
+
+spisok_rescurces_img = [ikonka_beton_img, ikonka_iron_img, ikonka_isvestnyak_img, ikonka_kabel_img,
+                   ikonka_karkas_img,
+                   ikonka_med_img, ikonka_motor_img, ikonka_plastina_img, ikonka_provolka_img,
+                   ikonka_prut_img,
+                   ikonka_rotor_img, ikonka_startor_img, ikonka_ukr_plastina_img, ikonka_vint_img,
+                   ikonka_ymnaya_obshivka_img]
+
 names_rescurces = [ikonka_text_rescurces_beton_image, ikonka_text_rescurces_iron_image, ikonka_text_rescurces_isvestnyak_image, ikonka_text_rescurces_kabel_image,
                    ikonka_text_rescurces_karkas_image,
                    ikonka_text_rescurces_med_image, ikonka_text_rescurces_motor_image, ikonka_text_rescurces_plastina_image, ikonka_text_rescurces_provolka_image,
                    ikonka_text_rescurces_prut_image,
                    ikonka_text_rescurces_rotor_image, ikonka_text_rescurces_startor_image, ikonka_text_rescurces_ukr_plastina_image, ikonka_text_rescurces_vint_image,
-                   ikonka_text_rescurces_ymnaya_obshivka_image, ikonka_text_postroyka_yashik_image, ikonka_text_postroyka_konstruktor_image, ikonka_text_postroyka_bur_image,
-                   ikonka_text_postroyka_asembler_image]
+                   ikonka_text_rescurces_ymnaya_obshivka_image, ikonka_text_postroyka_asembler_image, ikonka_text_postroyka_bur_image, ikonka_text_postroyka_konstruktor_image, ikonka_text_postroyka_yashik_image,
+                    ikonka_text_postroyka_yashik_image]
 
 numbers_image_for_sound = [number_0_img, number_10_img, number_20_img, number_30_img, number_40_img, number_50_img, number_60_img, number_70_img, number_80_img, number_90_img, number_100_img]
 

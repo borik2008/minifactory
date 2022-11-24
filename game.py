@@ -145,50 +145,34 @@ def game():
             num1 = random.randint(1, 7)
             num2 = random.randint(0, 14)
             if setka[num1][num2] == 0:
-                setka[num1][num2] = i+1
+                zhila = Zhila(i + 1, (num2 * 120, num1 * 125))
+                setka[num1][num2] = zhila.get_id()
                 numbers += 1
-                allSpites.add(Zhila(i, (num2 * 120, num1 * 125)))
+                allSpites.add(zhila)
                 for q in range(0, 120, 10):
                     for g in range(0, 130, 10):
-                        setkap[(num2 * 125 + g) // 10][(num1 * 120 + q) // 10] = 1
+                        setkap[(num2 * 125 + g) // 10][(num1 * 120 + q) // 10] = zhila.get_id()
             if numbers == 3:
                 break
 
     #создаём спрайты построек, интерфейса
-    ikonka_prut = Ikonka(ikonka_prut_img, (WIDTH / 2 + 100, 70), 239, "prut", ikonka_text_rescurces_prut_image)
-    ikonka_rotor = Ikonka(ikonka_rotor_img, (WIDTH / 2, 70), 5, "rotor", ikonka_text_rescurces_rotor_image)
-    ikonka_med = Ikonka(ikonka_med_img, (WIDTH / 2 - 50, 70), 1, "med", ikonka_text_rescurces_med_image)
-    ikonka_iron = Ikonka(ikonka_iron_img, (WIDTH / 2 + 50, 70), 3, "iron", ikonka_text_rescurces_iron_image)
-    ikonka_beton = Ikonka(ikonka_beton_img, (WIDTH / 2 - 100, 70), 3, "beton", ikonka_text_rescurces_beton_image)
-    ikonka_isvestnyak = Ikonka(ikonka_isvestnyak_img, (WIDTH / 2 + 150, 70), 1, "isvestnyak", ikonka_text_rescurces_isvestnyak_image)
-    ikonka_kabel = Ikonka(ikonka_kabel_img, (WIDTH / 2 - 150, 70), 9, "kabel", ikonka_text_rescurces_kabel_image)
-    ikonka_karkas = Ikonka(ikonka_karkas_img, (WIDTH / 2 + 200, 70), 1, "karkas", ikonka_text_rescurces_karkas_image)
-    ikonka_motor = Ikonka(ikonka_motor_img, (WIDTH / 2 - 200, 70), 1, "motor", ikonka_text_rescurces_motor_image)
-    ikonka_plastina = Ikonka(ikonka_plastina_img, (WIDTH / 2 + 250, 70), 7, "plastina", ikonka_text_rescurces_plastina_image)
-    ikonka_provolka = Ikonka(ikonka_provolka_img, (WIDTH / 2 - 250, 70), 1, "provolka", ikonka_text_rescurces_provolka_image)
-    ikonka_startor = Ikonka(ikonka_startor_img, (WIDTH / 2 + 300, 70), 1, "startor", ikonka_text_rescurces_startor_image)
-    ikonka_ukr_plastina = Ikonka(ikonka_ukr_plastina_img, (WIDTH / 2 - 300, 70), 5, "ukr_plastina", ikonka_text_rescurces_ukr_plastina_image)
-    ikonka_vint = Ikonka(ikonka_vint_img, (WIDTH / 2 + 350, 70), 1, "vint", ikonka_text_rescurces_vint_image)
-    ikonka_ymnaya_obshivka = Ikonka(ikonka_ymnaya_obshivka_img, (WIDTH / 2 - 350, 70), 6, "ymnaya_obshivka", ikonka_text_rescurces_ymnaya_obshivka_image)
     ikonka_count_resources_001 = Button(numbers_image[0], (WIDTH / 2 - 400, 70))
     ikonka_count_resources_010 = Button(numbers_image[0], (WIDTH / 2 - 420, 70))
     ikonka_count_resources_100 = Button(numbers_image[0], (WIDTH / 2 - 440, 70))
-    ikonka_asembler = Ikonka(ikonka_asembler_image, (WIDTH / 2, HEIGHT - 70), 1, "asembler", ikonka_text_postroyka_asembler_image)
-    ikonka_bur = Ikonka(ikonka_bur_image, (WIDTH / 2 - 100, HEIGHT - 70), 1, "bur", ikonka_text_postroyka_bur_image)
-    ikonka_constructor = Ikonka(ikonka_constructor_image, (WIDTH / 2 + 100, HEIGHT - 70), 1, "constructor", ikonka_text_postroyka_konstruktor_image)
-    #ikonka_razvetlitel = Ikonka(ikonka_razvetlitel_image, (WIDTH / 2 - 200, HEIGHT - 70), 1, "razvetvitel")
-    #ikonka_soedenitel = Ikonka(ikonka_soedenitel_image, (WIDTH / 2 + 200, HEIGHT - 70), 1, "soedenitel")
+    ikonki = pygame.sprite.Group()
+    postroiki = pygame.sprite.Group()
+    for i in range(15):
+        ikonka_rescurces = Ikonka_rescurces((WIDTH / 2 - 350 + i * 50, 70), 10, i + 20)
+        ikonki.add(ikonka_rescurces)
+    for i in range(5):
+        ikonka_postroek = Postroika((WIDTH / 2 - 200 + i * 100, HEIGHT - 70), 1, 10 + i)
+        ikonki.add(ikonka_postroek)
+        postroiki.add(ikonka_postroek)
     ikonka_name = Button(names_rescurces[0], (WIDTH / 2 - 630, 70))
 
     hud_up = Button(hud_up_img, (WIDTH / 2, HEIGHT / 2))
     hud_down = Button(hud_down_img, (WIDTH / 2, HEIGHT / 2))
     # добовляем в группы спрайтов спрайты
-    ikonki = pygame.sprite.Group()
-    ikonki.add(ikonka_rotor, ikonka_med, ikonka_iron, ikonka_prut, ikonka_beton, ikonka_isvestnyak, ikonka_kabel, ikonka_karkas, ikonka_motor,
-               ikonka_plastina, ikonka_provolka, ikonka_startor, ikonka_ukr_plastina, ikonka_vint, ikonka_ymnaya_obshivka, ikonka_asembler, ikonka_bur,
-               ikonka_constructor)
-    postroiki = pygame.sprite.Group()
-    postroiki.add(ikonka_asembler, ikonka_bur, ikonka_constructor)
     allSpites.add(hud_up, hud_down, ikonka_count_resources_001, ikonka_count_resources_010, ikonka_count_resources_100, ikonka_name)
     # создаём переменнаю для проверки привязанна ли расположение постройки к расположению мышки
     captured = False
@@ -209,17 +193,7 @@ def game():
                 #создаём спрайт постройки исли пользователь выбрал одну из них
                 for i in postroiki:
                     if pygame.Rect.collidepoint(i.rect, mouse_pos):
-
-                        if i.update(2) == "asembler":
-                            selected_building = Ikonka(ikonka_asembler_image, mouse_pos, 1, "asembler")
-                        if i.update(2) == "bur":
-                            selected_building = Ikonka(ikonka_bur_image, mouse_pos, 1, "bur")
-                        if i.update(2) == "constructor":
-                            selected_building = Ikonka(ikonka_constructor_image, mouse_pos, 1, "constructor")
-                        #if i.update(2) == "conveer1":
-                            #selected_building = Ikonka(ikonka_razvetlitel_image, mouse_pos, 1, "razvetvitel")
-                        #if i.update(2) == "conveer2":
-                            #selected_building = Ikonka(ikonka_soedenitel_image, mouse_pos, 1, "soedenitel")
+                        selected_building = Postroika(mouse_pos, 1, i.update(2))
                         captured = True
                         allSpites.add(selected_building)
 
@@ -227,7 +201,7 @@ def game():
             #пытаемся разместить обекто по сетке
             if event.type == pygame.MOUSEBUTTONUP and captured:
                 captured = False
-                #вычисляем размер помтройки
+                #вычисляем размер поcтройки
                 sizey = (selected_building.rect.bottomleft[1] - selected_building.rect.y)
                 sizex = (selected_building.rect.topright[0] - selected_building.rect.x)
                 #проверяем ечейку которая соответстует укрсору мышки свободна или нет
@@ -267,7 +241,7 @@ def game():
             selected_building.rect.x = mouse_pos[0]
             selected_building.rect.y = mouse_pos[1]
 
-        # формируем изображение меню
+        # формируем изображение игры
         allSpites.draw(screen)
         ikonki.draw(screen)
         pygame.display.flip()
