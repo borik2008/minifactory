@@ -62,7 +62,7 @@ id 13 = развзлетлитель
 id 14 = соеденитель
 """
 class Postroika(pygame.sprite.Sprite):
-    def __init__(self, pos, count, id):
+    def __init__(self, pos, count, id, na_zhile):
         pygame.sprite.Sprite.__init__(self)
         self.image = spisok_postroiki_image[id - 10]
         self.rect = self.image.get_rect()
@@ -70,9 +70,15 @@ class Postroika(pygame.sprite.Sprite):
         self.count = count
         self.text_image = names_rescurces[id + 5]
         self.id = id
+        self.na_zhile = na_zhile
 
     def get_count(self):
         return self.count
+
+    def get_size(self):
+        sizey = (self.rect.bottomleft[1] - self.rect.y)
+        sizex = (self.rect.topright[0] - self.rect.x)
+        return (sizex, sizey)
 
     def update(self, choice):
         if choice == 1:
@@ -81,9 +87,19 @@ class Postroika(pygame.sprite.Sprite):
             return self.id
         if choice == 3:
             return self.text_image
+        if choice == 4:
+            sizex, sizey = self.get_size()
+            return ((self.rect.x, self.rect.y), (sizex, sizey))
+        # не верно na_zhile в game.py
+        if choice == 5:
+            return self.na_zhile
 
     def get_id(self):
         return self.id
+
+    def rotare(self):
+        self.image = pygame.transform.rotate(self.image, 90)
+        self.rect = self.image.get_rect()
 
 class Ikonka_rescurces(pygame.sprite.Sprite):
     def __init__(self, pos, count, id):
@@ -108,3 +124,17 @@ class Ikonka_rescurces(pygame.sprite.Sprite):
 
     def get_id(self):
         return self.id
+
+class Block(pygame.sprite.Sprite):
+    def __init__(self, pos, id):
+        pygame.sprite.Sprite.__init__(self)
+        if id == 0:
+            self.image = spisok_windows_image[0]
+        elif 1 <= id <= 3:
+            self.image = spisok_windows_image[1]
+        elif id == 11:
+            self.image = spisok_windows_image[2]
+        else:
+            self.image = spisok_windows_image[3]
+        self.rect = self.image.get_rect()
+        self.rect.center = pos

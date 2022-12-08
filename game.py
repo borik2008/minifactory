@@ -1,3 +1,5 @@
+import time
+
 from classes import *
 import sys
 import random
@@ -5,7 +7,8 @@ import random
 
 WIDTH = 1920
 HEIGHT = 1080
-MUSIC_VOLUME = 0.1
+MUSIC_VOLUME = 0
+
 
 pygame.init()
 pygame.mixer.init()
@@ -128,30 +131,30 @@ def game():
     #создаём группу спрайтов
     allSpites = pygame.sprite.Group()
 
-    #создаём сетку размером 125 на 120 для размещения жил
-    setka = [0] * 8
-    for i in range(8):
-        setka[i] = [0] * 15
+    #создаём сетку размером 115 на 115 для размещения жил
+    setka_zhil = [0] * 9
+    for i in range(9):
+        setka_zhil[i] = [0] * 16
 
     #создаём сетку размером 10 на 10 для резмещения построек
-    setkap = [0] * 192
-    for i in range(192):
-        setkap[i] = [0] * 109
+    setkap = [0] * (192 * 2)
+    for i in range(192 * 2):
+        setkap[i] = [0] * (109 * 2)
 
     # размещение жил по сетке
     for i in range(0, 3):
         numbers = 0
         while True:
-            num1 = random.randint(1, 7)
-            num2 = random.randint(0, 14)
-            if setka[num1][num2] == 0:
-                zhila = Zhila(i + 1, (num2 * 120, num1 * 125))
-                setka[num1][num2] = zhila.get_id()
+            num1 = random.randint(1, 8)
+            num2 = random.randint(0, 15)
+            if setka_zhil[num1][num2] == 0:
+                zhila = Zhila(i + 1, (num2 * 115, num1 * 115))
+                setka_zhil[num1][num2] = zhila.get_id()
                 numbers += 1
                 allSpites.add(zhila)
-                for q in range(0, 120, 10):
-                    for g in range(0, 130, 10):
-                        setkap[(num2 * 125 + g) // 10][(num1 * 120 + q) // 10] = zhila.get_id()
+                for q in range(0, 115, 5):
+                    for g in range(0, 115, 5):
+                        setkap[(num2 * 115 + g) // 5][(num1 * 115 + q) // 5] = zhila.get_id()
             if numbers == 3:
                 break
 
@@ -165,19 +168,32 @@ def game():
         ikonka_rescurces = Ikonka_rescurces((WIDTH / 2 - 350 + i * 50, 70), 10, i + 20)
         ikonki.add(ikonka_rescurces)
     for i in range(5):
-        ikonka_postroek = Postroika((WIDTH / 2 - 200 + i * 100, HEIGHT - 70), 1, 10 + i)
+        ikonka_postroek = Postroika((WIDTH / 2 - 200 + i * 100, HEIGHT - 70), 1, 10 + i, 0)
         ikonki.add(ikonka_postroek)
         postroiki.add(ikonka_postroek)
     ikonka_name = Button(names_rescurces[0], (WIDTH / 2 - 630, 70))
 
     hud_up = Button(hud_up_img, (WIDTH / 2, HEIGHT / 2))
     hud_down = Button(hud_down_img, (WIDTH / 2, HEIGHT / 2))
+    group_setka = pygame.sprite.Group()
+    group_postroek = pygame.sprite.Group()
     # добовляем в группы спрайтов спрайты
     allSpites.add(hud_up, hud_down, ikonka_count_resources_001, ikonka_count_resources_010, ikonka_count_resources_100, ikonka_name)
     # создаём переменнаю для проверки привязанна ли расположение постройки к расположению мышки
     captured = False
+    for i in range(192 * 2):
+        for n in range(108 * 2):
+            group_setka.add(Block((i * 5, n * 5), setkap[i][n]))
+    timer = time.time()
     while True:
         screen.blit(fon_game_img, fon_game_img.get_rect())
+        if time.time() - timer > 5:
+            for i in group_setka:
+                i.kill()
+            for i in range(192 * 2):
+                for n in range(108 * 2):
+                    group_setka.add(Block((i * 5, n * 5), setkap[i][n]))
+            timer = time.time()
         #отображаем кол-во ресурсов для предмета на который мы навелись
         mouse_pos = pygame.mouse.get_pos()
         for i in ikonki:
@@ -188,46 +204,85 @@ def game():
                 ikonka_count_resources_100.set_img(numbers_image[i.update(1) // 100])
         #проверяем нажата ли какая нибудь кнопка
         for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[2] and captured:
+                selected_building.rotare()
+            if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[1]:
+                for i in group_postroek:
+                    if pygame.Rect.collidepoint(i.rect, mouse_pos):
+                        pos, size = i.update(4)
+                        new_id = i.update(5)
+
+                        # текущую ячеку помечаем что там чисто
+                        setkap[pos[0] // 5][pos[1] // 5] = 0
+                        for q in range(0, size[1], 5):
+                            for g in range(0, size[0], 5):
+                                # каждую явейку затрагиваемая обектом помечаем как свободную
+                                setkap[(pos[0] // 5 * 5 + g) // 5][(pos[1] // 5 * 5 + q) // 5] = new_id
+
+                        i.kill()
             #если пользователь нажал клавишу мышки
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
                 #создаём спрайт постройки исли пользователь выбрал одну из них
                 for i in postroiki:
                     if pygame.Rect.collidepoint(i.rect, mouse_pos):
-                        selected_building = Postroika(mouse_pos, 1, i.update(2))
+                        selected_building = Postroika(mouse_pos, 1, i.update(2), setkap[mouse_pos[0] // 5][mouse_pos[1] // 5])
                         captured = True
                         allSpites.add(selected_building)
+                        group_postroek.add(selected_building)
 
             #если клавиша мышки отпущена после нажатия и до этого была выбрана постройка для размещения
             #пытаемся разместить обекто по сетке
-            if event.type == pygame.MOUSEBUTTONUP and captured:
+            if event.type == pygame.MOUSEBUTTONUP and pygame.mouse.get_pressed()[0] == False and captured:
                 captured = False
                 #вычисляем размер поcтройки
-                sizey = (selected_building.rect.bottomleft[1] - selected_building.rect.y)
-                sizex = (selected_building.rect.topright[0] - selected_building.rect.x)
+                sizex, sizey = selected_building.get_size()
                 #проверяем ечейку которая соответстует укрсору мышки свободна или нет
-                if setkap[mouse_pos[0] // 10][mouse_pos[1] // 10] == 0:
-                    is_place_occupied = False
-                    for q in range(0, sizey, 10):
-                        for g in range(0, sizex, 10):
-                            numm1 = (mouse_pos[1] // 10 * 10 + q) // 10
-                            numm2 = (mouse_pos[0] // 10 * 10 + g) // 10
-                            if numm1 > 108 or numm2 > 191 or setkap[numm2][numm1] != 0:
+                # если ячека занята то is_place_occupied становится true
+                is_place_occupied = False
+                print(selected_building.get_id())
+                print(setkap[mouse_pos[0] // 5][mouse_pos[1] // 5])
+                if selected_building.get_id() == 11 and 0 < setkap[mouse_pos[0] // 5][mouse_pos[1] // 5] < 4:
+                    #создаём два цикла для проверки размера постройки в той ячейке которую она займёт
+                    for q in range(0, sizey, 5):
+                        for g in range(0, sizex, 5):
+                            #получаем кординаты ячейки постройки
+                            numm1 = (mouse_pos[1] // 5 * 5 + q) // 5
+                            numm2 = (mouse_pos[0] // 5 * 5 + g) // 5
+                            #проверяем пуста ли эта ячейка и если занята то selected_building.kill()
+                            if numm1 > 108 * 2 or numm2 > 191 * 2 or setkap[numm2][numm1] > 3 or setkap[numm2][numm1] < 1:
                                 is_place_occupied = True
                     if is_place_occupied:
                         selected_building.kill()
                     else:
                         #текущую ячеку помечаем что что-то там есть
-                        setkap[mouse_pos[0] // 10][mouse_pos[1] // 10] = 1
+                        setkap[mouse_pos[0] // 5][mouse_pos[1] // 5] = selected_building.get_id()
                         #изменяем позицию размещяемого обекта в соответстии с сеткой
-                        selected_building.rect.x = mouse_pos[0] // 10 * 10
-                        selected_building.rect.y = mouse_pos[1] // 10 * 10
-                        for q in range(0, sizey, 10):
-                            for g in range(0, sizex, 10):
-                                #когда выходим за граници экрана   IndexError: list index out of range
+                        selected_building.rect.x = mouse_pos[0] // 5 * 5
+                        selected_building.rect.y = mouse_pos[1] // 5 * 5
+                        for q in range(0, sizey, 5):
+                            for g in range(0, sizex, 5):
                                 #каждую явейку затрагиваемая обектом помечаем что как занята
-                                setkap[(mouse_pos[0] // 10 * 10 + g) // 10][(mouse_pos[1] // 10 * 10 + q) // 10] = 1
+                                setkap[(mouse_pos[0] // 5 * 5 + g) // 5][(mouse_pos[1] // 5 * 5 + q) // 5] = selected_building.get_id()
 
-
+                elif setkap[mouse_pos[0] // 5][mouse_pos[1] // 5] == 0 and selected_building.get_id() != 11:
+                    for q in range(0, sizey, 5):
+                        for g in range(0, sizex, 5):
+                            numm1 = (mouse_pos[1] // 5 * 5 + q) // 5
+                            numm2 = (mouse_pos[0] // 5 * 5 + g) // 5
+                            if numm1 > 108 * 2 or numm2 > 191 * 2 or setkap[numm2][numm1] != 0:
+                                is_place_occupied = True
+                    if is_place_occupied:
+                        selected_building.kill()
+                    else:
+                        #текущую ячеку помечаем что что-то там есть
+                        setkap[mouse_pos[0] // 5][mouse_pos[1] // 5] = selected_building.get_id()
+                        #изменяем позицию размещяемого обекта в соответстии с сеткой
+                        selected_building.rect.x = mouse_pos[0] // 5 * 5
+                        selected_building.rect.y = mouse_pos[1] // 5 * 5
+                        for q in range(0, sizey, 5):
+                            for g in range(0, sizex, 5):
+                                #каждую явейку затрагиваемая обектом помечаем что как занята
+                                setkap[(mouse_pos[0] // 5 * 5 + g) // 5][(mouse_pos[1] // 5 * 5 + q) // 5] = selected_building.get_id()
                 else:
                     selected_building.kill()
 
@@ -243,6 +298,7 @@ def game():
 
         # формируем изображение игры
         allSpites.draw(screen)
+        group_setka.draw(screen)
         ikonki.draw(screen)
         pygame.display.flip()
 

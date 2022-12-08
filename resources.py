@@ -86,6 +86,17 @@ ikonka_text_postroyka_konstruktor_image = pygame.image.load(os.path.join(main_fo
 ikonka_text_postroyka_yashik_image = pygame.image.load(os.path.join(main_folder, "images/names/yashik.png"))
 img_no_stroit = pygame.image.load(os.path.join(main_folder, "images/ne_stroit.png"))
 
+img_blue_window = pygame.image.load(os.path.join(main_folder, "images/for_setka/blue_window.png"))
+img_green_window = pygame.image.load(os.path.join(main_folder, "images/for_setka/green_window.png"))
+img_purple_window = pygame.image.load(os.path.join(main_folder, "images/for_setka/purple_window.png"))
+img_red_window = pygame.image.load(os.path.join(main_folder, "images/for_setka/red_window.png"))
+
+#зелёный пустота
+#фиолетовый жилы
+#синий бур
+#красный все остальные постройки
+spisok_windows_image = [img_green_window, img_purple_window, img_blue_window, img_red_window]
+
 spisok_zhil_image = [zhila_iron_img, zhila_isvestnyak_img, zhila_med_img]
 
 spisok_postroiki_image = [ikonka_asembler_image, ikonka_bur_image, ikonka_constructor_image, ikonka_razvetlitel_image, ikonka_soedenitel_image]
