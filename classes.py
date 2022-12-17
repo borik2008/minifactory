@@ -62,7 +62,7 @@ id 13 = развзлетлитель
 id 14 = соеденитель
 """
 class Postroika(pygame.sprite.Sprite):
-    def __init__(self, pos, count, id, na_zhile):
+    def __init__(self, pos, count, id):
         pygame.sprite.Sprite.__init__(self)
         self.image = spisok_postroiki_image[id - 10]
         self.rect = self.image.get_rect()
@@ -70,7 +70,7 @@ class Postroika(pygame.sprite.Sprite):
         self.count = count
         self.text_image = names_rescurces[id + 5]
         self.id = id
-        self.na_zhile = na_zhile
+        self.na_zhile = 0
 
     def get_count(self):
         return self.count
@@ -100,6 +100,9 @@ class Postroika(pygame.sprite.Sprite):
     def rotare(self):
         self.image = pygame.transform.rotate(self.image, 90)
         self.rect = self.image.get_rect()
+
+    def set_na_zhile(self, na_zhile):
+        self.na_zhile = na_zhile
 
 class Ikonka_rescurces(pygame.sprite.Sprite):
     def __init__(self, pos, count, id):

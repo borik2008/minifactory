@@ -132,9 +132,9 @@ def game():
     allSpites = pygame.sprite.Group()
 
     #создаём сетку размером 115 на 115 для размещения жил
-    setka_zhil = [0] * 9
-    for i in range(9):
-        setka_zhil[i] = [0] * 16
+    setka_zhil = [0] * 10
+    for i in range(10):
+        setka_zhil[i] = [0] * 17
 
     #создаём сетку размером 10 на 10 для резмещения построек
     setkap = [0] * (192 * 2)
@@ -144,9 +144,12 @@ def game():
     # размещение жил по сетке
     for i in range(0, 3):
         numbers = 0
+        peremennaya = 0
         while True:
             num1 = random.randint(1, 8)
             num2 = random.randint(0, 15)
+            if setka_zhil[num1 + 1][num2] != 0 or setka_zhil[num1 - 1][num2] != 0 or setka_zhil[num1][num2 + 1] != 0 or num2 - 1 >= 0 and setka_zhil[num1][num2 - 1] != 0:
+                continue
             if setka_zhil[num1][num2] == 0:
                 zhila = Zhila(i + 1, (num2 * 115, num1 * 115))
                 setka_zhil[num1][num2] = zhila.get_id()
@@ -155,6 +158,7 @@ def game():
                 for q in range(0, 115, 5):
                     for g in range(0, 115, 5):
                         setkap[(num2 * 115 + g) // 5][(num1 * 115 + q) // 5] = zhila.get_id()
+            peremennaya += 1
             if numbers == 3:
                 break
 
@@ -168,7 +172,7 @@ def game():
         ikonka_rescurces = Ikonka_rescurces((WIDTH / 2 - 350 + i * 50, 70), 10, i + 20)
         ikonki.add(ikonka_rescurces)
     for i in range(5):
-        ikonka_postroek = Postroika((WIDTH / 2 - 200 + i * 100, HEIGHT - 70), 1, 10 + i, 0)
+        ikonka_postroek = Postroika((WIDTH / 2 - 200 + i * 100, HEIGHT - 70), 1, 10 + i)
         ikonki.add(ikonka_postroek)
         postroiki.add(ikonka_postroek)
     ikonka_name = Button(names_rescurces[0], (WIDTH / 2 - 630, 70))
@@ -213,19 +217,23 @@ def game():
                         new_id = i.update(5)
 
                         # текущую ячеку помечаем что там чисто
-                        setkap[pos[0] // 5][pos[1] // 5] = 0
+                        setkap[pos[0] // 5][pos[1] // 5] = new_id
                         for q in range(0, size[1], 5):
                             for g in range(0, size[0], 5):
                                 # каждую явейку затрагиваемая обектом помечаем как свободную
                                 setkap[(pos[0] // 5 * 5 + g) // 5][(pos[1] // 5 * 5 + q) // 5] = new_id
 
                         i.kill()
+            #if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[2]:
+               # for i in group_postroek:
+                    #if pygame.Rect.collidepoint(i.rect, mouse_pos):
+
             #если пользователь нажал клавишу мышки
             if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
                 #создаём спрайт постройки исли пользователь выбрал одну из них
                 for i in postroiki:
                     if pygame.Rect.collidepoint(i.rect, mouse_pos):
-                        selected_building = Postroika(mouse_pos, 1, i.update(2), setkap[mouse_pos[0] // 5][mouse_pos[1] // 5])
+                        selected_building = Postroika(mouse_pos, 1, i.update(2))
                         captured = True
                         allSpites.add(selected_building)
                         group_postroek.add(selected_building)
@@ -239,9 +247,8 @@ def game():
                 #проверяем ечейку которая соответстует укрсору мышки свободна или нет
                 # если ячека занята то is_place_occupied становится true
                 is_place_occupied = False
-                print(selected_building.get_id())
-                print(setkap[mouse_pos[0] // 5][mouse_pos[1] // 5])
                 if selected_building.get_id() == 11 and 0 < setkap[mouse_pos[0] // 5][mouse_pos[1] // 5] < 4:
+                    selected_building.set_na_zhile(setkap[mouse_pos[0] // 5][mouse_pos[1] // 5])
                     #создаём два цикла для проверки размера постройки в той ячейке которую она займёт
                     for q in range(0, sizey, 5):
                         for g in range(0, sizex, 5):
