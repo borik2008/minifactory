@@ -224,9 +224,11 @@ def game():
                                 setkap[(pos[0] // 5 * 5 + g) // 5][(pos[1] // 5 * 5 + q) // 5] = new_id
 
                         i.kill()
-            #if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[2]:
-               # for i in group_postroek:
-                    #if pygame.Rect.collidepoint(i.rect, mouse_pos):
+            if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[2]:
+                for i in group_postroek:
+                    if pygame.Rect.collidepoint(i.rect, mouse_pos):
+                        print("af")
+                        #отрисовывать hud
 
             #если пользователь нажал клавишу мышки
             if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
