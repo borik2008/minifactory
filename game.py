@@ -129,6 +129,7 @@ def menu():
 
 def game():
     #создаём группу спрайтов
+    objects = pygame.sprite.Group()
     allSpites = pygame.sprite.Group()
 
     #создаём сетку размером 115 на 115 для размещения жил
@@ -154,7 +155,7 @@ def game():
                 zhila = Zhila(i + 1, (num2 * 115, num1 * 115))
                 setka_zhil[num1][num2] = zhila.get_id()
                 numbers += 1
-                allSpites.add(zhila)
+                objects.add(zhila)
                 for q in range(0, 115, 5):
                     for g in range(0, 115, 5):
                         setkap[(num2 * 115 + g) // 5][(num1 * 115 + q) // 5] = zhila.get_id()
@@ -189,15 +190,17 @@ def game():
         for n in range(108 * 2):
             group_setka.add(Block((i * 5, n * 5), setkap[i][n]))
     timer = time.time()
+    first_position_for_movement = (0,0)
+    move_map = False
     while True:
         screen.blit(fon_game_img, fon_game_img.get_rect())
-        if time.time() - timer > 5:
-            for i in group_setka:
-                i.kill()
-            for i in range(192 * 2):
-                for n in range(108 * 2):
-                    group_setka.add(Block((i * 5, n * 5), setkap[i][n]))
-            timer = time.time()
+        # if time.time() - timer > 5:
+        #     for i in group_setka:
+        #         i.kill()
+        #     for i in range(192 * 2):
+        #         for n in range(108 * 2):
+        #             group_setka.add(Block((i * 5, n * 5), setkap[i][n]))
+        #     timer = time.time()
         #отображаем кол-во ресурсов для предмета на который мы навелись
         mouse_pos = pygame.mouse.get_pos()
         for i in ikonki:
@@ -210,25 +213,24 @@ def game():
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[2] and captured:
                 selected_building.rotare()
-            if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[1]:
-                for i in group_postroek:
-                    if pygame.Rect.collidepoint(i.rect, mouse_pos):
-                        pos, size = i.update(4)
-                        new_id = i.update(5)
-
-                        # текущую ячеку помечаем что там чисто
-                        setkap[pos[0] // 5][pos[1] // 5] = new_id
-                        for q in range(0, size[1], 5):
-                            for g in range(0, size[0], 5):
-                                # каждую явейку затрагиваемая обектом помечаем как свободную
-                                setkap[(pos[0] // 5 * 5 + g) // 5][(pos[1] // 5 * 5 + q) // 5] = new_id
-
-                        i.kill()
-            if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[2]:
-                for i in group_postroek:
-                    if pygame.Rect.collidepoint(i.rect, mouse_pos):
-                        print("af")
-                        #отрисовывать hud
+            # if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[1]:
+            #     for i in group_postroek:
+            #         if pygame.Rect.collidepoint(i.rect, mouse_pos):
+            #             pos, size = i.update(4)
+            #             new_id = i.update(5)
+            #
+            #             # текущую ячеку помечаем что там чисто
+            #             setkap[pos[0] // 5][pos[1] // 5] = new_id
+            #             for q in range(0, size[1], 5):
+            #                 for g in range(0, size[0], 5):
+            #                     # каждую явейку затрагиваемая обектом помечаем как свободную
+            #                     setkap[(pos[0] // 5 * 5 + g) // 5][(pos[1] // 5 * 5 + q) // 5] = new_id
+            #
+            #             i.kill()
+            #if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[2]:
+                #for i in group_postroek:
+                    #if pygame.Rect.collidepoint(i.rect, mouse_pos):
+                        #отрисовывать сдесь меню постройки
 
             #если пользователь нажал клавишу мышки
             if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
@@ -237,8 +239,37 @@ def game():
                     if pygame.Rect.collidepoint(i.rect, mouse_pos):
                         selected_building = Postroika(mouse_pos, 1, i.update(2))
                         captured = True
-                        allSpites.add(selected_building)
+                        objects.add(selected_building)
                         group_postroek.add(selected_building)
+
+            if event.type == pygame.MOUSEBUTTONUP and pygame.mouse.get_pressed()[1] == False and move_map:
+                move_map = False
+                object_pos = zhila.update(7)
+                min_x = object_pos[0]
+                min_y = object_pos[1]
+                for i in objects:
+                    x = i.update(7)[0]
+                    y = i.update(7)[1]
+                    if x < min_x:
+                        min_x = x
+                    if y < min_y:
+                        min_x = y
+                    print(x, y, "x,y")
+                x_move = mouse_pos[0] - first_position_for_movement[0]
+                y_move = mouse_pos[1] - first_position_for_movement[1]
+                print(x_move, y_move, " 1")
+                if min_x + x_move < 0:
+                    x_move = x_move - (min_x + x_move)
+                if min_y + y_move < 0:
+                    y_move = y_move - (min_y + y_move)
+                print(x_move, y_move, " 2")
+                for i in objects:
+                    i.update(6, x_move, y_move)
+
+            if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[1] and move_map == False:
+                first_position_for_movement = mouse_pos
+                move_map = True
+
 
             #если клавиша мышки отпущена после нажатия и до этого была выбрана постройка для размещения
             #пытаемся разместить обекто по сетке
@@ -306,8 +337,9 @@ def game():
             selected_building.rect.y = mouse_pos[1]
 
         # формируем изображение игры
+        objects.draw(screen)
         allSpites.draw(screen)
-        group_setka.draw(screen)
+        #group_setka.draw(screen)
         ikonki.draw(screen)
         pygame.display.flip()
 

@@ -1,5 +1,6 @@
 from resources import *
 
+
 class Button(pygame.sprite.Sprite):
     def __init__(self, image, pos):
         pygame.sprite.Sprite.__init__(self)
@@ -10,12 +11,15 @@ class Button(pygame.sprite.Sprite):
     def set_img(self, image):
         self.image = image
 
+
 """
 класс жила 
 id 1 = железная
 id 2 = известняковая
 id 3 = медная
 """
+
+
 class Zhila(pygame.sprite.Sprite):
     def __init__(self, id, pos):
         pygame.sprite.Sprite.__init__(self)
@@ -31,9 +35,16 @@ class Zhila(pygame.sprite.Sprite):
     def get_id(self):
         return self.id
 
+    def update(self, choice, smeshen_x=0, smeshen_y=0):
+        if choice == 6:
+            self.rect.x = self.rect.x + smeshen_x
+            self.rect.y = self.rect.y + smeshen_y
+        if choice == 7:
+            return (self.rect.x, self.rect.y)
+
 
 class Ikonka(pygame.sprite.Sprite):
-    def __init__(self, image, pos, count, name, text_image = 0):
+    def __init__(self, image, pos, count, name, text_image=0):
         pygame.sprite.Sprite.__init__(self)
         self.image = image
         self.rect = self.image.get_rect()
@@ -53,6 +64,7 @@ class Ikonka(pygame.sprite.Sprite):
         if choice == 3:
             return self.text_image
 
+
 """
 клсс постройка
 id 10 = асемблер
@@ -61,6 +73,8 @@ id 12 = конструктор
 id 13 = развзлетлитель
 id 14 = соеденитель
 """
+
+
 class Postroika(pygame.sprite.Sprite):
     def __init__(self, pos, count, id):
         pygame.sprite.Sprite.__init__(self)
@@ -80,7 +94,7 @@ class Postroika(pygame.sprite.Sprite):
         sizex = (self.rect.topright[0] - self.rect.x)
         return (sizex, sizey)
 
-    def update(self, choice):
+    def update(self, choice, smeshen_x=0, smeshen_y=0):
         if choice == 1:
             return self.get_count()
         if choice == 2:
@@ -93,6 +107,11 @@ class Postroika(pygame.sprite.Sprite):
         # не верно na_zhile в game.py
         if choice == 5:
             return self.na_zhile
+        if choice == 6:
+            self.rect.x = self.rect.x + smeshen_x
+            self.rect.y = self.rect.y + smeshen_y
+        if choice == 7:
+            return (self.rect.x, self.rect.y)
 
     def get_id(self):
         return self.id
@@ -103,6 +122,8 @@ class Postroika(pygame.sprite.Sprite):
 
     def set_na_zhile(self, na_zhile):
         self.na_zhile = na_zhile
+
+
 
 class Ikonka_rescurces(pygame.sprite.Sprite):
     def __init__(self, pos, count, id):
@@ -127,6 +148,7 @@ class Ikonka_rescurces(pygame.sprite.Sprite):
 
     def get_id(self):
         return self.id
+
 
 class Block(pygame.sprite.Sprite):
     def __init__(self, pos, id):
