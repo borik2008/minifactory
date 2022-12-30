@@ -242,8 +242,11 @@ def game():
                         objects.add(selected_building)
                         group_postroek.add(selected_building)
 
+            #создаём передвижение по карте
             if event.type == pygame.MOUSEBUTTONUP and pygame.mouse.get_pressed()[1] == False and move_map:
                 move_map = False
+
+                #ищем минимальные кординаты x и y для определения границ смещения всех объектов
                 object_pos = zhila.update(7)
                 min_x = object_pos[0]
                 min_y = object_pos[1]
@@ -253,16 +256,17 @@ def game():
                     if x < min_x:
                         min_x = x
                     if y < min_y:
-                        min_x = y
-                    print(x, y, "x,y")
+                        min_y = y
+
+                #вычесляем смещение с учётом определённых границ
                 x_move = mouse_pos[0] - first_position_for_movement[0]
                 y_move = mouse_pos[1] - first_position_for_movement[1]
-                print(x_move, y_move, " 1")
                 if min_x + x_move < 0:
                     x_move = x_move - (min_x + x_move)
                 if min_y + y_move < 0:
                     y_move = y_move - (min_y + y_move)
-                print(x_move, y_move, " 2")
+
+                #смещаем объекты
                 for i in objects:
                     i.update(6, x_move, y_move)
 
