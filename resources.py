@@ -92,6 +92,7 @@ img_blue_window = pygame.image.load(os.path.join(main_folder, "images/for_setka/
 img_green_window = pygame.image.load(os.path.join(main_folder, "images/for_setka/green_window.png"))
 img_purple_window = pygame.image.load(os.path.join(main_folder, "images/for_setka/purple_window.png"))
 img_red_window = pygame.image.load(os.path.join(main_folder, "images/for_setka/red_window.png"))
+vedelenie_img = pygame.image.load(os.path.join(main_folder, "images/hud/vedelen.png"))
 
 #зелёный пустота
 #фиолетовый жилы

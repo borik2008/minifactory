@@ -1,5 +1,7 @@
 import time
 
+import pygame
+
 from classes import *
 import sys
 import random
@@ -7,6 +9,8 @@ import random
 
 WIDTH = 1920
 HEIGHT = 1080
+SIZESETKAX = 108
+SIZESETKAY = 192
 MUSIC_VOLUME = 0
 
 
@@ -138,8 +142,8 @@ def game():
         setka_zhil[i] = [0] * 17
 
     #создаём сетку размером 10 на 10 для резмещения построек
-    setkap = [0] * (192 * 2)
-    for i in range(192 * 2):
+    setkap = [0] * (SIZESETKAY * 2)
+    for i in range(SIZESETKAY * 2):
         setkap[i] = [0] * (109 * 2)
 
     # размещение жил по сетке
@@ -186,19 +190,21 @@ def game():
     allSpites.add(hud_up, hud_down, ikonka_count_resources_001, ikonka_count_resources_010, ikonka_count_resources_100, ikonka_name)
     # создаём переменнаю для проверки привязанна ли расположение постройки к расположению мышки
     captured = False
-    for i in range(192 * 2):
-        for n in range(108 * 2):
+    for i in range(SIZESETKAY * 2):
+        for n in range(SIZESETKAX * 2):
             group_setka.add(Block((i * 5, n * 5), setkap[i][n]))
     timer = time.time()
     first_position_for_movement = (0,0)
     move_map = False
+    hud = False
+    vedelenie = None
     while True:
         screen.blit(fon_game_img, fon_game_img.get_rect())
         # if time.time() - timer > 5:
         #     for i in group_setka:
         #         i.kill()
-        #     for i in range(192 * 2):
-        #         for n in range(108 * 2):
+        #     for i in range(SIZESETKAY * 2):
+        #         for n in range(SIZESETKAX * 2):
         #             group_setka.add(Block((i * 5, n * 5), setkap[i][n]))
         #     timer = time.time()
         #отображаем кол-во ресурсов для предмета на который мы навелись
@@ -227,11 +233,38 @@ def game():
             #                     setkap[(pos[0] // 5 * 5 + g) // 5][(pos[1] // 5 * 5 + q) // 5] = new_id
             #
             #             i.kill()
-            #if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[2]:
-                #for i in group_postroek:
-                    #if pygame.Rect.collidepoint(i.rect, mouse_pos):
-                        #отрисовывать сдесь меню постройки
+            # отрисовывать сдесь меню постройки
+            if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[2] and not hud and not captured:
 
+                hud = True
+                if 1920 / 2 < mouse_pos[0]:
+                    hud_image = hud_postroika_left_img
+                    hud_x = 214
+
+                elif 1920 / 2 > mouse_pos[0]:
+                    hud_image = hud_postroika_right_img
+                    hud_x = 1920 - 214
+
+                hud_postroika = Button(hud_image, (hud_x, 540))
+                allSpites.add(hud_postroika)
+                for i in group_postroek:
+                    if pygame.Rect.collidepoint(i.rect, mouse_pos):
+                        vedelenie = Button(vedelenie_img, i.rect.center)
+                        id = i.update(2)
+                        postroika_na_hud = Button(spisok_postroiki_image[id - 10], (hud_x , 540))
+                        allSpites.add(postroika_na_hud, vedelenie)
+
+
+
+
+            elif event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[2] and hud:
+                allSpites.remove(hud_postroika)
+                hud_postroika.kill()
+                if vedelenie is not None:
+                    vedelenie.kill()
+                    postroika_na_hud.kill()
+                    allSpites.remove(vedelenie, postroika_na_hud)
+                hud = False
             #если пользователь нажал клавишу мышки
             if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
                 #создаём спрайт постройки исли пользователь выбрал одну из них
@@ -281,21 +314,11 @@ def game():
                 captured = False
                 #вычисляем размер поcтройки
                 sizex, sizey = selected_building.get_size()
+                size_building = selected_building.get_size()
                 #проверяем ечейку которая соответстует укрсору мышки свободна или нет
-                # если ячека занята то is_place_occupied становится true
-                is_place_occupied = False
                 if selected_building.get_id() == 11 and 0 < setkap[mouse_pos[0] // 5][mouse_pos[1] // 5] < 4:
                     selected_building.set_na_zhile(setkap[mouse_pos[0] // 5][mouse_pos[1] // 5])
-                    #создаём два цикла для проверки размера постройки в той ячейке которую она займёт
-                    for q in range(0, sizey, 5):
-                        for g in range(0, sizex, 5):
-                            #получаем кординаты ячейки постройки
-                            numm1 = (mouse_pos[1] // 5 * 5 + q) // 5
-                            numm2 = (mouse_pos[0] // 5 * 5 + g) // 5
-                            #проверяем пуста ли эта ячейка и если занята то selected_building.kill()
-                            if numm1 > 108 * 2 or numm2 > 191 * 2 or setkap[numm2][numm1] > 3 or setkap[numm2][numm1] < 1:
-                                is_place_occupied = True
-                    if is_place_occupied:
+                    if is_place_occupied(size_building, mouse_pos, setkap, True):
                         selected_building.kill()
                     else:
                         #текущую ячеку помечаем что что-то там есть
@@ -309,13 +332,7 @@ def game():
                                 setkap[(mouse_pos[0] // 5 * 5 + g) // 5][(mouse_pos[1] // 5 * 5 + q) // 5] = selected_building.get_id()
 
                 elif setkap[mouse_pos[0] // 5][mouse_pos[1] // 5] == 0 and selected_building.get_id() != 11:
-                    for q in range(0, sizey, 5):
-                        for g in range(0, sizex, 5):
-                            numm1 = (mouse_pos[1] // 5 * 5 + q) // 5
-                            numm2 = (mouse_pos[0] // 5 * 5 + g) // 5
-                            if numm1 > 108 * 2 or numm2 > 191 * 2 or setkap[numm2][numm1] != 0:
-                                is_place_occupied = True
-                    if is_place_occupied:
+                    if is_place_occupied(size_building, mouse_pos, setkap, False):
                         selected_building.kill()
                     else:
                         #текущую ячеку помечаем что что-то там есть
@@ -347,6 +364,19 @@ def game():
         ikonki.draw(screen)
         pygame.display.flip()
 
+#создаём функцию is_place_occupied
+def is_place_occupied(size_building, mouse_pos, setkap, is_bur):
+    for q in range(0, size_building[1], 5):
+        for g in range(0, size_building[0], 5):
+            numm1 = (mouse_pos[1] // 5 * 5 + q) // 5
+            numm2 = (mouse_pos[0] // 5 * 5 + g) // 5
+            if is_bur:
+                if numm1 > SIZESETKAX * 2 or numm2 > 191 * 2 or setkap[numm2][numm1] > 3 or setkap[numm2][numm1] == 0:
+                    return True
+            else:
+                if numm1 > SIZESETKAX * 2 or numm2 > 191 * 2 or setkap[numm2][numm1] != 0:
+                    return True
+    return False
 
 if __name__ == '__main__':
     menu()

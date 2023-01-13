@@ -65,6 +65,7 @@ class Ikonka(pygame.sprite.Sprite):
             return self.text_image
 
 
+
 """
 клсс постройка
 id 10 = асемблер
@@ -85,6 +86,15 @@ class Postroika(pygame.sprite.Sprite):
         self.text_image = names_rescurces[id + 5]
         self.id = id
         self.na_zhile = 0
+        self.napravlenie = 0
+        self.cordinates_conveera = [0, 0]
+    """
+    napravlenie = 0 нет конвеера
+    napravlenie = 1 конвеер вверх
+    napravlenie = 2 конвеер в право
+    napravlenie = 3 нонвеер налево
+    napravlenie = 4 конвеер вниз
+    """
 
     def get_count(self):
         return self.count
