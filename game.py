@@ -171,21 +171,22 @@ def game():
     ikonka_count_resources_001 = Button(numbers_image[0], (WIDTH / 2 - 400, 70))
     ikonka_count_resources_010 = Button(numbers_image[0], (WIDTH / 2 - 420, 70))
     ikonka_count_resources_100 = Button(numbers_image[0], (WIDTH / 2 - 440, 70))
-    ikonki = pygame.sprite.Group()
-    postroiki = pygame.sprite.Group()
+    ikonki_rescurces = pygame.sprite.Group()
+    ikonki_postroek = pygame.sprite.Group()
     for i in range(15):
-        ikonka_rescurces = Ikonka_rescurces((WIDTH / 2 - 350 + i * 50, 70), 10, i + 20)
-        ikonki.add(ikonka_rescurces)
+        ikonka_rescurce = Ikonka_rescurces((WIDTH / 2 - 350 + i * 50, 70), 10, i + 20)
+        ikonki_rescurces.add(ikonka_rescurce)
     for i in range(5):
         ikonka_postroek = Postroika((WIDTH / 2 - 200 + i * 100, HEIGHT - 70), 1, 10 + i)
-        ikonki.add(ikonka_postroek)
-        postroiki.add(ikonka_postroek)
+        ikonki_rescurces.add(ikonka_postroek)
+        ikonki_postroek.add(ikonka_postroek)
     ikonka_name = Button(names_rescurces[0], (WIDTH / 2 - 630, 70))
 
     hud_up = Button(hud_up_img, (WIDTH / 2, HEIGHT / 2))
     hud_down = Button(hud_down_img, (WIDTH / 2, HEIGHT / 2))
     group_setka = pygame.sprite.Group()
     group_postroek = pygame.sprite.Group()
+    group_hud = pygame.sprite.Group()
     # добовляем в группы спрайтов спрайты
     allSpites.add(hud_up, hud_down, ikonka_count_resources_001, ikonka_count_resources_010, ikonka_count_resources_100, ikonka_name)
     # создаём переменнаю для проверки привязанна ли расположение постройки к расположению мышки
@@ -198,7 +199,9 @@ def game():
     move_map = False
     hud = False
     vedelenie = None
+
     while True:
+        print(len(group_postroek) + len(group_hud) + len(allSpites) + len(ikonki_rescurces) + len(ikonki_postroek))
         screen.blit(fon_game_img, fon_game_img.get_rect())
         # if time.time() - timer > 5:
         #     for i in group_setka:
@@ -209,7 +212,7 @@ def game():
         #     timer = time.time()
         #отображаем кол-во ресурсов для предмета на который мы навелись
         mouse_pos = pygame.mouse.get_pos()
-        for i in ikonki:
+        for i in ikonki_rescurces:
             if pygame.Rect.collidepoint(i.rect, mouse_pos):
                 ikonka_name.set_img(i.update(3))
                 ikonka_count_resources_001.set_img(numbers_image[i.update(1) % 10])
@@ -218,7 +221,7 @@ def game():
         #проверяем нажата ли какая нибудь кнопка
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[2] and captured:
-                selected_building.rotare()
+                selected_building.rotate()
             # if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[1]:
             #     for i in group_postroek:
             #         if pygame.Rect.collidepoint(i.rect, mouse_pos):
@@ -246,29 +249,35 @@ def game():
                     hud_x = 1920 - 214
 
                 hud_postroika = Button(hud_image, (hud_x, 540))
-                allSpites.add(hud_postroika)
-                for i in group_postroek:
-                    if pygame.Rect.collidepoint(i.rect, mouse_pos):
-                        vedelenie = Button(vedelenie_img, i.rect.center)
-                        id = i.update(2)
-                        postroika_na_hud = Button(spisok_postroiki_image[id - 10], (hud_x , 540))
-                        allSpites.add(postroika_na_hud, vedelenie)
+                group_hud.add(hud_postroika)
+                for postroika in group_postroek:
+                    if pygame.Rect.collidepoint(postroika.rect, mouse_pos):
+                        vedelenie = Button(vedelenie_img, postroika.rect.center)
+                        id = postroika.update(2)
+                        postroika_na_hud = Button(spisok_postroiki_image[id - 10], (hud_x, 540), postroika.update(8))
+                        group_hud.add(postroika_na_hud, vedelenie)
+                        spisok_napravlenie = postroika.update(9)
+                        for i in range(4):
+                            if spisok_napravlenie[i] == 1:
+                                group_hud.add(Strelki([hud_x, 540], i, 0))
+                                group_hud.add(Strelki([hud_x, 540], i, 1))
+                                group_hud.add(Strelki([hud_x, 540], i, 2))
 
 
 
 
-            elif event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[2] and hud:
-                allSpites.remove(hud_postroika)
-                hud_postroika.kill()
-                if vedelenie is not None:
-                    vedelenie.kill()
-                    postroika_na_hud.kill()
-                    allSpites.remove(vedelenie, postroika_na_hud)
+                close_button = Button(img_close, (hud_x, 100))
+                group_hud.add(close_button)
+
+
+            elif hud and pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0] and pygame.Rect.collidepoint(close_button.rect, mouse_pos):
+                for object in group_hud:
+                    object.kill()
                 hud = False
             #если пользователь нажал клавишу мышки
             if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
                 #создаём спрайт постройки исли пользователь выбрал одну из них
-                for i in postroiki:
+                for i in ikonki_postroek:
                     if pygame.Rect.collidepoint(i.rect, mouse_pos):
                         selected_building = Postroika(mouse_pos, 1, i.update(2))
                         captured = True
@@ -361,7 +370,8 @@ def game():
         objects.draw(screen)
         allSpites.draw(screen)
         #group_setka.draw(screen)
-        ikonki.draw(screen)
+        ikonki_rescurces.draw(screen)
+        group_hud.draw(screen)
         pygame.display.flip()
 
 #создаём функцию is_place_occupied

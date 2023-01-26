@@ -2,14 +2,19 @@ from resources import *
 
 
 class Button(pygame.sprite.Sprite):
-    def __init__(self, image, pos):
+    def __init__(self, image, pos, rotate_count=0):
         pygame.sprite.Sprite.__init__(self)
         self.image = image
         self.rect = self.image.get_rect()
+        self.rotate(rotate_count)
         self.rect.center = pos
 
     def set_img(self, image):
         self.image = image
+
+    def rotate(self, rotate_count):
+        self.image = pygame.transform.rotate(self.image, rotate_count * 90)
+        self.rect = self.image.get_rect()
 
 
 """
@@ -73,7 +78,10 @@ id 11 = бур
 id 12 = конструктор
 id 13 = развзлетлитель
 id 14 = соеденитель
+
+self.orentation хранит целое число кол-во поворотов на 90% относительно исходного изобрпжения
 """
+
 
 
 class Postroika(pygame.sprite.Sprite):
@@ -88,6 +96,9 @@ class Postroika(pygame.sprite.Sprite):
         self.na_zhile = 0
         self.napravlenie = 0
         self.cordinates_conveera = [0, 0]
+        self.orentation = 0
+        self.outputs_diraction = spisok_postroiki_outputs_diraction[id - 10]
+
     """
     napravlenie = 0 нет конвеера
     napravlenie = 1 конвеер вверх
@@ -122,13 +133,20 @@ class Postroika(pygame.sprite.Sprite):
             self.rect.y = self.rect.y + smeshen_y
         if choice == 7:
             return (self.rect.x, self.rect.y)
+        if choice == 8:
+            return self.orentation
+        if choice == 9:
+            return self.outputs_diraction
 
     def get_id(self):
         return self.id
 
-    def rotare(self):
+    def rotate(self):
         self.image = pygame.transform.rotate(self.image, 90)
+        self.orentation += 1
+        self.orentation = self.orentation %4
         self.rect = self.image.get_rect()
+        self.outputs_diraction = [self.outputs_diraction[-1]] + self.outputs_diraction[:-1]
 
     def set_na_zhile(self, na_zhile):
         self.na_zhile = na_zhile
@@ -173,3 +191,26 @@ class Block(pygame.sprite.Sprite):
             self.image = spisok_windows_image[3]
         self.rect = self.image.get_rect()
         self.rect.center = pos
+
+
+class Strelki(pygame.sprite.Sprite):
+    def __init__(self, pos, direction, type):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = spisok_strelki_img[type]
+        self.rect = self.image.get_rect()
+        self.rotate(direction)
+        if (direction + 1) % 2 == 0:
+            pos[1] = pos[1] + 120 - direction * 60
+            pos[0] = pos[0] - 25 + 25 * type
+        else:
+            pos[0] = pos[0] - 60 + direction * 60
+            pos[1] = pos[1] - 25 + 25 * type
+
+        self.rect.center = pos
+
+    def set_img(self, image):
+        self.image = image
+
+    def rotate(self, rotate_count):
+        self.image = pygame.transform.rotate(self.image, rotate_count * 90)
+        self.rect = self.image.get_rect()

@@ -1,4 +1,3 @@
-
 import pygame
 import os
 
@@ -81,12 +80,17 @@ ikonka_text_rescurces_rotor_image = pygame.image.load(os.path.join(main_folder, 
 ikonka_text_rescurces_startor_image = pygame.image.load(os.path.join(main_folder, "images/names/startor.png"))
 ikonka_text_rescurces_ukr_plastina_image = pygame.image.load(os.path.join(main_folder, "images/names/ukr_plastina.png"))
 ikonka_text_rescurces_vint_image = pygame.image.load(os.path.join(main_folder, "images/names/vint.png"))
-ikonka_text_rescurces_ymnaya_obshivka_image = pygame.image.load(os.path.join(main_folder, "images/names/ymnaya_obshivka.png"))
+ikonka_text_rescurces_ymnaya_obshivka_image = pygame.image.load(
+    os.path.join(main_folder, "images/names/ymnaya_obshivka.png"))
 ikonka_text_postroyka_asembler_image = pygame.image.load(os.path.join(main_folder, "images/names/asembler.png"))
 ikonka_text_postroyka_bur_image = pygame.image.load(os.path.join(main_folder, "images/names/bur.png"))
 ikonka_text_postroyka_konstruktor_image = pygame.image.load(os.path.join(main_folder, "images/names/konstruktor.png"))
 ikonka_text_postroyka_yashik_image = pygame.image.load(os.path.join(main_folder, "images/names/yashik.png"))
 img_no_stroit = pygame.image.load(os.path.join(main_folder, "images/ne_stroit.png"))
+img_close = pygame.image.load((os.path.join(main_folder, "images/hud/close.png")))
+img_left = pygame.image.load((os.path.join(main_folder, "images/hud/left.png")))
+img_top = pygame.image.load((os.path.join(main_folder, "images/hud/top.png")))
+img_right = pygame.image.load((os.path.join(main_folder, "images/hud/right.png")))
 
 img_blue_window = pygame.image.load(os.path.join(main_folder, "images/for_setka/blue_window.png"))
 img_green_window = pygame.image.load(os.path.join(main_folder, "images/for_setka/green_window.png"))
@@ -94,34 +98,52 @@ img_purple_window = pygame.image.load(os.path.join(main_folder, "images/for_setk
 img_red_window = pygame.image.load(os.path.join(main_folder, "images/for_setka/red_window.png"))
 vedelenie_img = pygame.image.load(os.path.join(main_folder, "images/hud/vedelen.png"))
 
-#зелёный пустота
-#фиолетовый жилы
-#синий бур
-#красный все остальные постройки
+# зелёный пустота
+# фиолетовый жилы
+# синий бур
+# красный все остальные постройки
 spisok_windows_image = [img_green_window, img_purple_window, img_blue_window, img_red_window]
 
 spisok_zhil_image = [zhila_iron_img, zhila_isvestnyak_img, zhila_med_img]
 
-spisok_postroiki_image = [ikonka_asembler_image, ikonka_bur_image, ikonka_constructor_image, ikonka_razvetlitel_image, ikonka_soedenitel_image]
+spisok_postroiki_image = [ikonka_asembler_image, ikonka_bur_image, ikonka_constructor_image, ikonka_razvetlitel_image,
+                          ikonka_soedenitel_image]
+
+spisok_strelki_img = [img_left, img_top, img_right]
+
+"""
+0 0 1 0 - выход справо
+1 0 0 0 - выход слева
+0 1 0 0 - выход сверху
+0 0 0 1 - выход снизу
+"""
+spisok_postroiki_outputs_diraction = [[0, 0, 1, 0], [1, 0, 0, 0], [1, 0, 0, 0], [1, 0, 1, 1], [0, 0, 0, 1]]
 
 
 spisok_rescurces_img = [ikonka_beton_img, ikonka_iron_img, ikonka_isvestnyak_img, ikonka_kabel_img,
-                   ikonka_karkas_img,
-                   ikonka_med_img, ikonka_motor_img, ikonka_plastina_img, ikonka_provolka_img,
-                   ikonka_prut_img,
-                   ikonka_rotor_img, ikonka_startor_img, ikonka_ukr_plastina_img, ikonka_vint_img,
-                   ikonka_ymnaya_obshivka_img]
+                        ikonka_karkas_img,
+                        ikonka_med_img, ikonka_motor_img, ikonka_plastina_img, ikonka_provolka_img,
+                        ikonka_prut_img,
+                        ikonka_rotor_img, ikonka_startor_img, ikonka_ukr_plastina_img, ikonka_vint_img,
+                        ikonka_ymnaya_obshivka_img]
 
-names_rescurces = [ikonka_text_rescurces_beton_image, ikonka_text_rescurces_iron_image, ikonka_text_rescurces_isvestnyak_image, ikonka_text_rescurces_kabel_image,
+names_rescurces = [ikonka_text_rescurces_beton_image, ikonka_text_rescurces_iron_image,
+                   ikonka_text_rescurces_isvestnyak_image, ikonka_text_rescurces_kabel_image,
                    ikonka_text_rescurces_karkas_image,
-                   ikonka_text_rescurces_med_image, ikonka_text_rescurces_motor_image, ikonka_text_rescurces_plastina_image, ikonka_text_rescurces_provolka_image,
+                   ikonka_text_rescurces_med_image, ikonka_text_rescurces_motor_image,
+                   ikonka_text_rescurces_plastina_image, ikonka_text_rescurces_provolka_image,
                    ikonka_text_rescurces_prut_image,
-                   ikonka_text_rescurces_rotor_image, ikonka_text_rescurces_startor_image, ikonka_text_rescurces_ukr_plastina_image, ikonka_text_rescurces_vint_image,
-                   ikonka_text_rescurces_ymnaya_obshivka_image, ikonka_text_postroyka_asembler_image, ikonka_text_postroyka_bur_image, ikonka_text_postroyka_konstruktor_image, ikonka_text_postroyka_yashik_image,
-                    ikonka_text_postroyka_yashik_image]
+                   ikonka_text_rescurces_rotor_image, ikonka_text_rescurces_startor_image,
+                   ikonka_text_rescurces_ukr_plastina_image, ikonka_text_rescurces_vint_image,
+                   ikonka_text_rescurces_ymnaya_obshivka_image, ikonka_text_postroyka_asembler_image,
+                   ikonka_text_postroyka_bur_image, ikonka_text_postroyka_konstruktor_image,
+                   ikonka_text_postroyka_yashik_image,
+                   ikonka_text_postroyka_yashik_image]
 
-numbers_image_for_sound = [number_0_img, number_10_img, number_20_img, number_30_img, number_40_img, number_50_img, number_60_img, number_70_img, number_80_img, number_90_img, number_100_img]
+numbers_image_for_sound = [number_0_img, number_10_img, number_20_img, number_30_img, number_40_img, number_50_img,
+                           number_60_img, number_70_img, number_80_img, number_90_img, number_100_img]
 
-numbers_image = [number_0__img, number__1__img, number__2__img, number__3__img, number__4__img, number__5__img, number__6__img, number__7__img, number__8__img, number__9__img]
+numbers_image = [number_0__img, number__1__img, number__2__img, number__3__img, number__4__img, number__5__img,
+                 number__6__img, number__7__img, number__8__img, number__9__img]
 
 fon_music = os.path.join(main_folder, 'sounds\\oil_rig_ambience_01.mp3')
