@@ -151,6 +151,9 @@ class Postroika(pygame.sprite.Sprite):
     def set_na_zhile(self, na_zhile):
         self.na_zhile = na_zhile
 
+    def get_pos(self):
+        return self.rect.center
+
 
 
 class Ikonka_rescurces(pygame.sprite.Sprite):
@@ -194,11 +197,14 @@ class Block(pygame.sprite.Sprite):
 
 
 class Strelki(pygame.sprite.Sprite):
-    def __init__(self, pos, direction, type):
+    def __init__(self, pos, direction, type, postroika):
         pygame.sprite.Sprite.__init__(self)
         self.image = spisok_strelki_img[type]
         self.rect = self.image.get_rect()
         self.rotate(direction)
+        self.direction = direction
+        self.postroika = postroika
+        self.type = type
         if (direction + 1) % 2 == 0:
             pos[1] = pos[1] + 120 - direction * 60
             pos[0] = pos[0] - 25 + 25 * type
@@ -214,3 +220,24 @@ class Strelki(pygame.sprite.Sprite):
     def rotate(self, rotate_count):
         self.image = pygame.transform.rotate(self.image, rotate_count * 90)
         self.rect = self.image.get_rect()
+
+    def get_direction(self):
+        return self.direction
+
+    def get_type(self):
+        return self.type
+
+    def get_pos(self):
+        return self.postroika.get_pos()
+
+class Conveer(pygame.sprite.Sprite):
+    def __init__(self, napravlenie, type, pos):
+        pygame.sprite.Sprite.__init__(self)
+        self.napravlenie = napravlenie
+        self.type = type
+        if type == 1:
+            self.image = img_conveer_straight
+        else:
+            self.image = img_conveer_corner
+        self.rect = self.image.get_rect()
+        self.rect.center = pos
