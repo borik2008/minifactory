@@ -202,7 +202,7 @@ def game():
     vedelenie = None
 
     while True:
-        print(len(group_postroek) + len(group_hud) + len(allSpites) + len(ikonki_rescurces) + len(ikonki_postroek))
+        #print(len(group_postroek) + len(group_hud) + len(allSpites) + len(ikonki_rescurces) + len(ikonki_postroek))
         screen.blit(fon_game_img, fon_game_img.get_rect())
         #отображаем кол-во ресурсов для предмета на который мы навелись
         mouse_pos = pygame.mouse.get_pos()
@@ -226,6 +226,7 @@ def game():
                 group_hud.add(hud_postroika)
                 for postroika in group_postroek:
                     if pygame.Rect.collidepoint(postroika.rect, mouse_pos):
+                        vedelenaya_postroika = postroika
                         vedelenie = Button(vedelenie_img, postroika.rect.center)
                         id = postroika.update(2)
                         postroika_na_hud = Button(spisok_postroiki_image[id - 10], (hud_x, 540), postroika.update(8))
@@ -253,8 +254,7 @@ def game():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 strelka = strelka_press(mouse_pos, strelki_group)
                 if strelka:
-                    print("_______________________-")
-                    conveer = Conveer(strelka.get_direction(), strelka.get_type(), strelka.get_pos())
+                    conveer = vedelenaya_postroika.add_new_conveer(strelka)
                     objects.add(conveer)
 
             #отслеживаем решил ли пользователь переместится по карте
@@ -265,7 +265,6 @@ def game():
             if event.type == pygame.MOUSEBUTTONUP and pygame.mouse.get_pressed()[1] == False and move_map:
                 move_map = False
                 moving_map(objects, zhila, mouse_pos, first_position_for_movement)
-
 
             #если клавиша мышки отпущена после нажатия и до этого была выбрана постройка для размещения
             #пытаемся разместить обекто по сетке
@@ -320,8 +319,8 @@ def moving_map(objects, zhila, mouse_pos, first_position_for_movement):
             min_y = y
 
     # вычесляем смещение с учётом определённых границ
-    x_move = mouse_pos[0] - first_position_for_movement[0]
-    y_move = mouse_pos[1] - first_position_for_movement[1]
+    x_move = first_position_for_movement[0] - mouse_pos[0]
+    y_move = first_position_for_movement[1] - mouse_pos[1]
     if min_x + x_move < 0:
         x_move = x_move - (min_x + x_move)
     if min_y + y_move < 0:

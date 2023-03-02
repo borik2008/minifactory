@@ -49,9 +49,9 @@ hud_next_img = pygame.image.load(os.path.join(main_folder, "images/hud/next.png"
 hud_previos_img = pygame.image.load(os.path.join(main_folder, "images/hud/previos.png"))
 number_0__img = pygame.image.load(os.path.join(main_folder, "images/numbers/0_.png"))
 number_1__img = pygame.image.load(os.path.join(main_folder, "images/numbers/1.png"))
-ikonka_asembler_image = pygame.image.load(os.path.join(main_folder, "images/asembler 1.png"))
-ikonka_bur_image = pygame.image.load(os.path.join(main_folder, "images/bur 1.png"))
-ikonka_constructor_image = pygame.image.load(os.path.join(main_folder, "images/constructor 1.png"))
+ikonka_asembler_image = pygame.image.load(os.path.join(main_folder, "images/asembler_1.png"))
+ikonka_bur_image = pygame.image.load(os.path.join(main_folder, "images/bur_1.png"))
+ikonka_constructor_image = pygame.image.load(os.path.join(main_folder, "images/constructor_1.png"))
 ikonka_soedenitel_image = pygame.image.load(os.path.join(main_folder, "images/soedenitel.png"))
 ikonka_razvetlitel_image = pygame.image.load(os.path.join(main_folder, "images/razvetlitel.png"))
 number__1__img = pygame.image.load(os.path.join(main_folder, "images/numbers/1_.png"))
@@ -91,8 +91,8 @@ img_close = pygame.image.load(os.path.join(main_folder, "images/hud/close.png"))
 img_left = pygame.image.load(os.path.join(main_folder, "images/hud/left.png"))
 img_top = pygame.image.load(os.path.join(main_folder, "images/hud/top.png"))
 img_right = pygame.image.load(os.path.join(main_folder, "images/hud/right.png"))
-img_conveer_straight = pygame.image.load(os.path.join(main_folder, "images/conveer 1.png"))
-img_conveer_corner = pygame.image.load(os.path.join(main_folder, "images/conveer 2.png"))
+img_conveer_straight = pygame.image.load(os.path.join(main_folder, "images/conveer_1.png"))
+img_conveer_corner = pygame.image.load(os.path.join(main_folder, "images/conveer_2.png"))
 
 img_blue_window = pygame.image.load(os.path.join(main_folder, "images/for_setka/blue_window.png"))
 img_green_window = pygame.image.load(os.path.join(main_folder, "images/for_setka/green_window.png"))
@@ -116,8 +116,8 @@ spisok_strelki_img = [img_left, img_top, img_right]
 """
 0 0 1 0 - выход справо
 1 0 0 0 - выход слева
-0 1 0 0 - выход сверху
-0 0 0 1 - выход снизу
+0 1 0 0 - выход cнизу
+0 0 0 1 - выход сверху
 """
 spisok_postroiki_outputs_diraction = [[0, 0, 1, 0], [1, 0, 0, 0], [1, 0, 0, 0], [1, 0, 1, 1], [0, 0, 0, 1]]
 
