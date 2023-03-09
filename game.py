@@ -228,6 +228,7 @@ def game():
                     if pygame.Rect.collidepoint(postroika.rect, mouse_pos):
                         vedelenaya_postroika = postroika
                         vedelenie = Button(vedelenie_img, postroika.rect.center)
+                        objects.add(vedelenie)
                         id = postroika.update(2)
                         postroika_na_hud = Button(spisok_postroiki_image[id - 10], (hud_x, 540), postroika.update(8))
                         group_hud.add(postroika_na_hud, vedelenie)

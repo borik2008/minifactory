@@ -16,6 +16,13 @@ class Button(pygame.sprite.Sprite):
         self.image = pygame.transform.rotate(self.image, rotate_count * 90)
         self.rect = self.image.get_rect()
 
+    def update(self, choice, smeshen_x=0, smeshen_y=0):
+        if choice == 6:
+            self.rect.x = self.rect.x + smeshen_x
+            self.rect.y = self.rect.y + smeshen_y
+        if choice == 7:
+            return (self.rect.x, self.rect.y)
+
 
 """
 класс жила 
