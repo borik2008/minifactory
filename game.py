@@ -256,7 +256,10 @@ def game():
                 strelka = strelka_press(mouse_pos, strelki_group)
                 if strelka:
                     conveer = vedelenaya_postroika.add_new_conveer(strelka)
-                    objects.add(conveer)
+                    conveer_test = Conveer(1, (100, 100), 1)
+                    objects.add(conveer, conveer_test)
+                    print(conveer)
+                    print(conveer_test)
 
             #отслеживаем решил ли пользователь переместится по карте
             if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[1] and move_map == False:
