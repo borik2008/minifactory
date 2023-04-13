@@ -1,65 +1,48 @@
 import time
-
-import pygame
-
 from classes import *
 import sys
 import random
 
-
-WIDTH = 1920
-HEIGHT = 1080
-SIZESETKAX = 108
-SIZESETKAY = 192
-MUSIC_VOLUME = 0
-
-
-pygame.init()
-pygame.mixer.init()
-
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("mini Factory")
-
-#Функция описываюшея работу меню настроек
+# Функция описываюшея работу меню настроек
 def settings():
-    #подключаем глобальную переменнаю по уровню громкости музыки
+    # подключаем глобальную переменнаю по уровню громкости музыки
     global MUSIC_VOLUME
-    #создаём спрайты интерфейса управления данного меню
+    # создаём спрайты интерфейса управления данного меню
     sound_off_btn = Button(btn_sound_off_img, (WIDTH / 2, HEIGHT / 2 + 200))
     sound_minus_btn = Button(btn_sound_minus_img, (WIDTH / 2 - 100, HEIGHT / 2 + 70))
     sound_plus_btn = Button(btn_sound_plus_img, (WIDTH / 2 + 100, HEIGHT / 2 + 70))
     back_to_menu_btn = Button(btn_back_img, (WIDTH / 2, HEIGHT / 2 - 100))
     number = Button(numbers_image_for_sound[int(MUSIC_VOLUME * 10)], (WIDTH / 2, HEIGHT / 2 + 70))
-    #создаём группу для всех элементов управления
+    # создаём группу для всех элементов управления
     buttons = pygame.sprite.Group()
     buttons.add(sound_off_btn, sound_minus_btn, sound_plus_btn, back_to_menu_btn, number)
     while True:
-        #отслеживаем нажатые пользователем клавиши
+        # отслеживаем нажатые пользователем клавиши
         for event in pygame.event.get():
-            #обрабатываем случай если пользователь нажал ESC, вызываем меню подтвержения(выходим/остаёмся)
+            # обрабатываем случай если пользователь нажал ESC, вызываем меню подтвержения(выходим/остаёмся)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     if confrim() == 1:
                         sys.exit()
-            #обрабатываем случай если пользователь нажал лкм
+            # обрабатываем случай если пользователь нажал лкм
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
-                #если пользаватель нажал назад то возвзращаемся назад
+                # если пользаватель нажал назад то возвзращаемся назад
                 if back_to_menu_btn.rect.collidepoint(mouse_pos):
                     return
-                #если пользователь нажал прибавить громкость то увеличиваем громкость и меняем изображения громкости
+                # если пользователь нажал прибавить громкость то увеличиваем громкость и меняем изображения громкости
                 if sound_plus_btn.rect.collidepoint(mouse_pos):
                     if MUSIC_VOLUME < 1:
                         MUSIC_VOLUME += 0.1
                         number.set_img(numbers_image_for_sound[int(round(MUSIC_VOLUME * 10))])
                         pygame.mixer.music.set_volume(MUSIC_VOLUME)
-                #если пользователь нажал уменьшить громкость то уменьшаем громкость и меняем изображения громкости
+                # если пользователь нажал уменьшить громкость то уменьшаем громкость и меняем изображения громкости
                 if sound_minus_btn.rect.collidepoint(mouse_pos):
                     if MUSIC_VOLUME > 0:
                         MUSIC_VOLUME -= 0.1
                         number.set_img(numbers_image_for_sound[int(round(MUSIC_VOLUME * 10))])
                         pygame.mixer.music.set_volume(MUSIC_VOLUME)
-                #если пользователь нажал отключить громкость то отключаем громкость и меняем изображения громкости
+                # если пользователь нажал отключить громкость то отключаем громкость и меняем изображения громкости
                 if sound_off_btn.rect.collidepoint(mouse_pos):
                     pygame.mixer.music.set_volume(0)
                     number.set_img(numbers_image_for_sound[0])
@@ -67,17 +50,17 @@ def settings():
 
         # перекрываем поверх всех элементов фоновое изображение
         screen.blit(fon_image, fon_image.get_rect())
-        #отрисовываем кнопки на экране
+        # отрисовываем кнопки на экране
         buttons.draw(screen)
-        #обновляем сформировонаё изображение экрана
+        # обновляем сформировонаё изображение экрана
         pygame.display.flip()
 
 
 def confrim():
-    #создаём спрайты
+    # создаём спрайты
     yes_btn = Button(btn_yes_img, (WIDTH / 2 + 100, HEIGHT / 2))
     no_btn = Button(btn_no_img, (WIDTH / 2 - 100, HEIGHT / 2))
-    #создаём группу спрайтов
+    # создаём группу спрайтов
     buttons = pygame.sprite.Group()
     buttons.add(yes_btn, no_btn)
     # формируем изображения подтвержения
@@ -85,7 +68,7 @@ def confrim():
     buttons.draw(screen)
     pygame.display.flip()
     while True:
-        #проверяем нажал ли пользователь на (yes/no) и выходим из функции
+        # проверяем нажал ли пользователь на (yes/no) и выходим из функции
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
@@ -95,56 +78,49 @@ def confrim():
                     return 0
 
 
-
 def menu():
     pygame.mixer.music.load(fon_music)
     pygame.mixer.music.set_volume(MUSIC_VOLUME)
     pygame.mixer.music.play(-1)
-    #создаём спрайты
+    # создаём спрайты
     start_btn = Button(btn_start_img, (WIDTH / 2, HEIGHT / 2 - 100))
     settings_btn = Button(btn_settings_img, (WIDTH / 2, HEIGHT / 2 + 100))
     quit_btn = Button(btn_quit_img, (WIDTH / 2, HEIGHT / 2 + 200))
-    #создаём группу для спрайтов
+    # создаём группу для спрайтов
     buttons = pygame.sprite.Group()
     buttons.add(start_btn, settings_btn, quit_btn)
     while True:
         for event in pygame.event.get():
-            #проверяем надал ли пользователь лкм
+            # проверяем надал ли пользователь лкм
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
-                #если пользователь нажал настройки то открывается меню настроек
+                # если пользователь нажал настройки то открывается меню настроек
                 if settings_btn.rect.collidepoint(mouse_pos):
                     settings()
-                #если пользователь нажал выход то открывается меню подтверждения выхода из игры
+                # если пользователь нажал выход то открывается меню подтверждения выхода из игры
                 if quit_btn.rect.collidepoint(mouse_pos):
                     if confrim() == 1:
                         sys.exit()
-                #если пользователь нажал старт то открываается игра
+                # если пользователь нажал старт то открываается игра
                 if start_btn.rect.collidepoint(mouse_pos):
                     game()
 
-        #формируем изображение меню
+        # формируем изображение меню
         screen.blit(fon_image, fon_image.get_rect())
         buttons.draw(screen)
         pygame.display.flip()
 
 
-
-
 def game():
-    #создаём группу спрайтов
+    # создаём группу спрайтов
     objects = pygame.sprite.Group()
+    zhil_group = pygame.sprite.Group()
     allSpites = pygame.sprite.Group()
 
-    #создаём сетку размером 115 на 115 для размещения жил
+    # создаём сетку размером 115 на 115 для размещения жил
     setka_zhil = [0] * 10
     for i in range(10):
         setka_zhil[i] = [0] * 17
-
-    #создаём сетку размером 10 на 10 для резмещения построек
-    setkap = [0] * (SIZESETKAY * 2)
-    for i in range(SIZESETKAY * 2):
-        setkap[i] = [0] * (109 * 2)
 
     # размещение жил по сетке
     for i in range(0, 3):
@@ -153,21 +129,20 @@ def game():
         while True:
             num1 = random.randint(1, 8)
             num2 = random.randint(0, 15)
-            if setka_zhil[num1 + 1][num2] != 0 or setka_zhil[num1 - 1][num2] != 0 or setka_zhil[num1][num2 + 1] != 0 or num2 - 1 >= 0 and setka_zhil[num1][num2 - 1] != 0:
+            if setka_zhil[num1 + 1][num2] != 0 or setka_zhil[num1 - 1][num2] != 0 or setka_zhil[num1][
+                num2 + 1] != 0 or num2 - 1 >= 0 and setka_zhil[num1][num2 - 1] != 0:
                 continue
             if setka_zhil[num1][num2] == 0:
                 zhila = Zhila(i + 1, (num2 * 115, num1 * 115))
                 setka_zhil[num1][num2] = zhila.get_id()
                 numbers += 1
                 objects.add(zhila)
-                for q in range(0, 115, 5):
-                    for g in range(0, 115, 5):
-                        setkap[(num2 * 115 + g) // 5][(num1 * 115 + q) // 5] = zhila.get_id()
+                zhil_group.add(zhila)
             peremennaya += 1
             if numbers == 3:
                 break
 
-    #создаём спрайты построек, интерфейса
+    # создаём спрайты построек, интерфейса
     ikonka_count_resources_001 = Button(numbers_image[0], (WIDTH / 2 - 400, 70))
     ikonka_count_resources_010 = Button(numbers_image[0], (WIDTH / 2 - 420, 70))
     ikonka_count_resources_100 = Button(numbers_image[0], (WIDTH / 2 - 440, 70))
@@ -184,27 +159,24 @@ def game():
 
     hud_up = Button(hud_up_img, (WIDTH / 2, HEIGHT / 2))
     hud_down = Button(hud_down_img, (WIDTH / 2, HEIGHT / 2))
-    group_setka = pygame.sprite.Group()
     group_postroek = pygame.sprite.Group()
     group_hud = pygame.sprite.Group()
     strelki_group = pygame.sprite.Group()
     # добовляем в группы спрайтов спрайты
-    allSpites.add(hud_up, hud_down, ikonka_count_resources_001, ikonka_count_resources_010, ikonka_count_resources_100, ikonka_name)
+    allSpites.add(hud_up, hud_down, ikonka_count_resources_001, ikonka_count_resources_010, ikonka_count_resources_100,
+                  ikonka_name)
     # создаём переменнаю для проверки привязанна ли расположение постройки к расположению мышки
     captured = False
-    for i in range(SIZESETKAY * 2):
-        for n in range(SIZESETKAX * 2):
-            group_setka.add(Block((i * 5, n * 5), setkap[i][n]))
     timer = time.time()
-    first_position_for_movement = (0,0)
+    first_position_for_movement = (0, 0)
     move_map = False
     hud = False
     vedelenie = None
 
     while True:
-        #print(len(group_postroek) + len(group_hud) + len(allSpites) + len(ikonki_rescurces) + len(ikonki_postroek))
+        # print(len(group_postroek) + len(group_hud) + len(allSpites) + len(ikonki_rescurces) + len(ikonki_postroek))
         screen.blit(fon_game_img, fon_game_img.get_rect())
-        #отображаем кол-во ресурсов для предмета на который мы навелись
+        # отображаем кол-во ресурсов для предмета на который мы навелись
         mouse_pos = pygame.mouse.get_pos()
         for i in ikonki_rescurces:
             if pygame.Rect.collidepoint(i.rect, mouse_pos):
@@ -212,7 +184,7 @@ def game():
                 ikonka_count_resources_001.set_img(numbers_image[i.update(1) % 10])
                 ikonka_count_resources_010.set_img(numbers_image[i.update(1) % 100 // 10])
                 ikonka_count_resources_100.set_img(numbers_image[i.update(1) // 100])
-        #проверяем нажата ли какая нибудь кнопка
+        # проверяем нажата ли какая нибудь кнопка
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[2] and captured:
                 selected_building.rotate()
@@ -237,51 +209,49 @@ def game():
                 close_button = Button(img_close, (hud_x, 100))
                 group_hud.add(close_button)
 
-            elif hud and pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0] and pygame.Rect.collidepoint(close_button.rect, mouse_pos):
+            elif hud and pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[2]:
                 for object in strelki_group:
                     object.kill()
                 for object in group_hud:
                     object.kill()
                 hud = False
-            #если пользователь нажал клавишу мышки
+            # если пользователь нажал клавишу мышки
             if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
-                #создаём спрайт постройки исли пользователь выбрал одну из них
+                # создаём спрайт постройки исли пользователь выбрал одну из них
                 for i in ikonki_postroek:
                     if pygame.Rect.collidepoint(i.rect, mouse_pos):
                         selected_building = Postroika(mouse_pos, 1, i.update(2))
                         captured = True
                         objects.add(selected_building)
-                        group_postroek.add(selected_building)
             if event.type == pygame.MOUSEBUTTONDOWN:
                 strelka = strelka_press(mouse_pos, strelki_group)
                 if strelka:
-                    conveer = vedelenaya_postroika.add_new_conveer(strelka)
-                    conveer_test = Conveer(1, (100, 100), 1)
-                    objects.add(conveer, conveer_test)
+                    conveer = vedelenaya_postroika.add_new_conveer(strelka, objects)
+                    if conveer is not None:
+                        objects.add(conveer)
                     print(conveer)
-                    print(conveer_test)
 
-            #отслеживаем решил ли пользователь переместится по карте
+            # отслеживаем решил ли пользователь переместится по карте
             if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[1] and move_map == False:
                 first_position_for_movement = mouse_pos
                 move_map = True
-            #отрисовываем новое положение карты
+            # отрисовываем новое положение карты
             if event.type == pygame.MOUSEBUTTONUP and pygame.mouse.get_pressed()[1] == False and move_map:
                 move_map = False
                 moving_map(objects, zhila, mouse_pos, first_position_for_movement)
 
-            #если клавиша мышки отпущена после нажатия и до этого была выбрана постройка для размещения
-            #пытаемся разместить обекто по сетке
+            # если клавиша мышки отпущена после нажатия и до этого была выбрана постройка для размещения
+            # пытаемся разместить обект по сетке
             if event.type == pygame.MOUSEBUTTONUP and pygame.mouse.get_pressed()[0] == False and captured:
                 captured = False
-                building_postroika_on_map(selected_building, mouse_pos, setkap)
+                try_to_place(selected_building, group_postroek, zhil_group)
 
-            #когда пользователь нажмёт ESC то появится окно (yes/no) для выхода
+            # когда пользователь нажмёт ESC то появится окно (yes/no) для выхода
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     if confrim() == 1:
                         return 0
-        #в кординаты выбранной постройки передаём mouse_pos
+        # в кординаты выбранной постройки передаём mouse_pos
         if 'selected_building' in locals() and captured:
             selected_building.rect.x = mouse_pos[0]
             selected_building.rect.y = mouse_pos[1]
@@ -290,25 +260,12 @@ def game():
 
         objects.draw(screen)
         allSpites.draw(screen)
-        #group_setka.draw(screen)
         ikonki_rescurces.draw(screen)
         group_hud.draw(screen)
         strelki_group.draw(screen)
         pygame.display.flip()
 
-#создаём функцию is_place_occupied
-def is_place_occupied(size_building, mouse_pos, setkap, is_bur):
-    for q in range(0, size_building[1], 5):
-        for g in range(0, size_building[0], 5):
-            numm1 = (mouse_pos[1] // 5 * 5 + q) // 5
-            numm2 = (mouse_pos[0] // 5 * 5 + g) // 5
-            if is_bur:
-                if numm1 > SIZESETKAX * 2 or numm2 > 191 * 2 or setkap[numm2][numm1] > 3 or setkap[numm2][numm1] == 0:
-                    return True
-            else:
-                if numm1 > SIZESETKAX * 2 or numm2 > 191 * 2 or setkap[numm2][numm1] != 0:
-                    return True
-    return False
+
 def moving_map(objects, zhila, mouse_pos, first_position_for_movement):
     # ищем минимальные кординаты x и y для определения границ смещения всех объектов
     object_pos = zhila.update(7)
@@ -334,6 +291,7 @@ def moving_map(objects, zhila, mouse_pos, first_position_for_movement):
     for i in objects:
         i.update(6, x_move, y_move)
 
+
 def get_x_conrdinate_hud(mouse_pos):
     if 1920 / 2 < mouse_pos[0]:
         hud_image = hud_postroika_left_img
@@ -344,6 +302,7 @@ def get_x_conrdinate_hud(mouse_pos):
         hud_x = 1920 - 214
     return hud_x, hud_image
 
+
 def draw_arrows(postroika, strelki_group, hud_x):
     spisok_napravlenie = postroika.update(9)
     for i in range(4):
@@ -352,43 +311,27 @@ def draw_arrows(postroika, strelki_group, hud_x):
             strelki_group.add(Strelki([hud_x, 540], i, 1, postroika))
             strelki_group.add(Strelki([hud_x, 540], i, 2, postroika))
 
-def building_postroika_on_map(selected_building, mouse_pos, setkap):
-    # вычисляем размер поcтройки
-    sizex, sizey = selected_building.get_size()
-    size_building = selected_building.get_size()
-    # проверяем ечейку которая соответстует кyрсору мышки свободна или нет
-    if selected_building.get_id() == 11 and 0 < setkap[mouse_pos[0] // 5][mouse_pos[1] // 5] < 4:
-        selected_building.set_na_zhile(setkap[mouse_pos[0] // 5][mouse_pos[1] // 5])
-        if is_place_occupied(size_building, mouse_pos, setkap, True):
-            selected_building.kill()
-        else:
-            # текущую ячеку помечаем что что-то там есть
-            setkap[mouse_pos[0] // 5][mouse_pos[1] // 5] = selected_building.get_id()
-            # изменяем позицию размещяемого обекта в соответстии с сеткой
-            selected_building.rect.x = mouse_pos[0] // 5 * 5
-            selected_building.rect.y = mouse_pos[1] // 5 * 5
-            for q in range(0, sizey, 5):
-                for g in range(0, sizex, 5):
-                    # каждую явейку затрагиваемая обектом помечаем что как занята
-                    setkap[(mouse_pos[0] // 5 * 5 + g) // 5][
-                        (mouse_pos[1] // 5 * 5 + q) // 5] = selected_building.get_id()
 
-    elif setkap[mouse_pos[0] // 5][mouse_pos[1] // 5] == 0 and selected_building.get_id() != 11:
-        if is_place_occupied(size_building, mouse_pos, setkap, False):
-            selected_building.kill()
-        else:
-            # текущую ячеку помечаем что что-то там есть
-            setkap[mouse_pos[0] // 5][mouse_pos[1] // 5] = selected_building.get_id()
-            # изменяем позицию размещяемого обекта в соответстии с сеткой
-            selected_building.rect.x = mouse_pos[0] // 5 * 5
-            selected_building.rect.y = mouse_pos[1] // 5 * 5
-            for q in range(0, sizey, 5):
-                for g in range(0, sizex, 5):
-                    # каждую явейку затрагиваемая обектом помечаем что как занята
-                    setkap[(mouse_pos[0] // 5 * 5 + g) // 5][
-                        (mouse_pos[1] // 5 * 5 + q) // 5] = selected_building.get_id()
-    else:
+def try_to_place(selected_building, group_postroek, zhil_group):
+    new_pos = selected_building.rect.center
+    selected_building.rect.center = (new_pos[0] // 10 * 10, new_pos[1] // 10 * 10)
+    if selected_building.get_id() == 11:
+        for zhila in zhil_group:
+            if pygame.Rect.collidepoint(zhila.rect, selected_building.rect.center):
+                if selected_building.rect.x > zhila.rect.x and selected_building.rect.y > zhila.rect.y and selected_building.rect.bottom < zhila.rect.bottom and selected_building.rect.right < zhila.rect.right:
+                    selected_building.set_na_zhile(zhila.get_id())
+                    group_postroek.add(selected_building)
+                    selected_building.set_init_coord_for_conveer()
+                    return
         selected_building.kill()
+    else:
+        if pygame.sprite.spritecollide(selected_building, group_postroek, False) or pygame.sprite.spritecollide(
+                selected_building, zhil_group, False):
+            selected_building.kill()
+            return
+        group_postroek.add(selected_building)
+        selected_building.set_init_coord_for_conveer()
+
 
 def strelka_press(mouse_pos, strelki_group):
     if pygame.mouse.get_pressed()[0]:
@@ -396,5 +339,7 @@ def strelka_press(mouse_pos, strelki_group):
             if pygame.Rect.collidepoint(i.rect, mouse_pos):
                 return i
     return False
+
+
 if __name__ == '__main__':
     menu()

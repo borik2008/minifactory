@@ -104,10 +104,7 @@ class Postroika(pygame.sprite.Sprite):
         self.orentation = 0
         self.outputs_diraction = spisok_postroiki_outputs_diraction[id - 10]
         self.spisok_spiskov_conveera = [None, None, None, None]
-        self.cordinates_init_for_conveer = [[self.rect.left - 7, self.rect.center[1]],
-                                            [self.rect.center[0], self.rect.bottom + 7],
-                                            [self.rect.right + 7, self.rect.center[1]],
-                                            [self.rect.center[0], self.rect.top - 7]]
+        self.cordinates_init_for_conveer = []
 
     """
     napravlenie = 0 нет конвеера
@@ -115,7 +112,18 @@ class Postroika(pygame.sprite.Sprite):
     napravlenie = 2 конвеер в право
     napravlenie = 3 нонвеер налево
     napravlenie = 4 конвеер вниз
+
+    direction = 0 конвеер влево
+    direction = 1 конвеер вниз
+    direction = 2 конвеер вправо
+    direction = 3 нонвеер вверх
     """
+
+    def set_init_coord_for_conveer(self):
+        self.cordinates_init_for_conveer = [[self.rect.left - CONVEER_SIZE / 2, self.rect.center[1]],
+                                            [self.rect.center[0], self.rect.bottom + CONVEER_SIZE / 2],
+                                            [self.rect.right + CONVEER_SIZE / 2, self.rect.center[1]],
+                                            [self.rect.center[0], self.rect.top - CONVEER_SIZE / 2]]
 
     def get_conveer(self, diraction):
         if self.spisok_spiskov_conveera[diraction] is None:
@@ -131,6 +139,16 @@ class Postroika(pygame.sprite.Sprite):
             self.spisok_spiskov_conveera[direction] = conveer
         else:
             last_conveer.next = conveer
+        x = self.cordinates_init_for_conveer[direction][0]
+        y = self.cordinates_init_for_conveer[direction][1]
+        if conveer.get_output_diraction() == 0:
+            self.cordinates_init_for_conveer[direction][0] = x - CONVEER_SIZE
+        elif conveer.get_output_diraction() == 1:
+            self.cordinates_init_for_conveer[direction][1] = y + CONVEER_SIZE
+        elif conveer.get_output_diraction() == 2:
+            self.cordinates_init_for_conveer[direction][0] = x + CONVEER_SIZE
+        else:
+            self.cordinates_init_for_conveer[direction][1] = y - CONVEER_SIZE
 
     def get_count(self):
         return self.count
@@ -181,22 +199,15 @@ class Postroika(pygame.sprite.Sprite):
     def get_cordinates_for_conveer(self, direction):
         return self.cordinates_init_for_conveer[direction]
 
-    def add_new_conveer(self, strelka):
+    def add_new_conveer(self, strelka, objects):
         direction = strelka.get_direction()
-        print(self.get_cordinates_for_conveer(direction))
-        conveer = Conveer(strelka.get_type(), self.get_cordinates_for_conveer(direction), direction)
+        conveer = Conveer(strelka.get_type(), self.get_cordinates_for_conveer(direction), direction,
+                          self.get_conveer(direction))
+        if pygame.sprite.spritecollide(conveer, objects, False):
+            conveer.kill()
+            return None
         self.add_conveer_to_spisok(direction, conveer)
-        current_cor = self.cordinates_init_for_conveer[direction]
-        if strelka.get_type() == 1 and direction == 0:
-            self.cordinates_init_for_conveer[direction] = [current_cor[0] - 7, current_cor[1]]
         return conveer
-
-    # [[self.rect.left - 7, self.rect.center[1]],
-    #  [self.rect.center[0], self.rect.bottom + 7],
-    #  [self.rect.right + 7, self.rect.center[1]],
-    #  [self.rect.center[0], self.rect.top - 7]]
-
-
 
 
 class Ikonka_rescurces(pygame.sprite.Sprite):
@@ -288,8 +299,11 @@ class Conveer(pygame.sprite.Sprite):
         self.type = type
         self.previous = previous
         self.next = next
+        if previous is not None:
+            diraction = previous.get_output_diraction()
         if type == 1:
             self.image = img_conveer_straight
+            self.output_diraction = diraction
             if diraction == 0 or diraction == 2:
                 self.image = pygame.transform.rotate(self.image, 90)
         else:
@@ -297,20 +311,49 @@ class Conveer(pygame.sprite.Sprite):
             if type == 0:
                 if diraction == 2:
                     self.image = pygame.transform.rotate(self.image, -90)
-                if diraction == 1:
+                    self.output_diraction = 1
+                elif diraction == 1:
                     self.image = pygame.transform.rotate(self.image, -180)
-                if diraction == 0:
+                    self.output_diraction = 0
+                elif diraction == 0:
                     self.image = pygame.transform.rotate(self.image, -270)
+                    self.output_diraction = 3
+                else:
+                    self.output_diraction = 2
             else:
                 if diraction == 3:
                     self.image = pygame.transform.rotate(self.image, -90)
-                if diraction == 2:
+                    self.output_diraction = 0
+                elif diraction == 2:
                     self.image = pygame.transform.rotate(self.image, -180)
-                if diraction == 1:
+                    self.output_diraction = 3
+                elif diraction == 1:
                     self.image = pygame.transform.rotate(self.image, -270)
+                    self.output_diraction = 2
+                else:
+                    self.output_diraction = 1
         self.rect = self.image.get_rect()
         self.rect.center = pos
         self.diraction = diraction
+        print(self.output_diraction)
+
+    """
+    direction = 0 конвеер влево
+    direction = 1 конвеер вниз
+    direction = 2 конвеер вправо
+    direction = 3 нонвеер вверх
+
+    type:
+    0 - вправо
+    1 - прямой
+    2 - влево 
+    """
+
+    def get_type(self):
+        return self.type
+
+    def get_output_diraction(self):
+        return self.output_diraction
 
     def rotate(self, rotate_count):
         self.image = pygame.transform.rotate(self.image, rotate_count * 90)
