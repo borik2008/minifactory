@@ -104,7 +104,7 @@ class Postroika(pygame.sprite.Sprite):
         self.orentation = 0
         self.outputs_diraction = spisok_postroiki_outputs_diraction[id - 10]
         self.spisok_spiskov_conveera = [None, None, None, None]
-        self.cordinates_init_for_conveer = []
+        self.input_ports = [True, True, True, True]
 
     """
     napravlenie = 0 нет конвеера
@@ -118,45 +118,6 @@ class Postroika(pygame.sprite.Sprite):
     direction = 2 конвеер вправо
     direction = 3 нонвеер вверх
     """
-
-    def set_init_coord_for_conveer(self):
-        self.cordinates_init_for_conveer = [[self.rect.left - CONVEER_SIZE / 2, self.rect.center[1]],
-                                            [self.rect.center[0], self.rect.bottom + CONVEER_SIZE / 2],
-                                            [self.rect.right + CONVEER_SIZE / 2, self.rect.center[1]],
-                                            [self.rect.center[0], self.rect.top - CONVEER_SIZE / 2]]
-
-    def get_conveer(self, diraction):
-        if self.spisok_spiskov_conveera[diraction] is None:
-            return None
-        last_conveer = self.spisok_spiskov_conveera[diraction]
-        while last_conveer.next is not None:
-            last_conveer = last_conveer.next
-        return last_conveer
-
-    def add_conveer_to_spisok(self, direction, conveer):
-        last_conveer = self.get_conveer(direction)
-        if last_conveer is None:
-            self.spisok_spiskov_conveera[direction] = conveer
-        else:
-            last_conveer.next = conveer
-        x = self.cordinates_init_for_conveer[direction][0]
-        y = self.cordinates_init_for_conveer[direction][1]
-        if conveer.get_output_diraction() == 0:
-            self.cordinates_init_for_conveer[direction][0] = x - CONVEER_SIZE
-        elif conveer.get_output_diraction() == 1:
-            self.cordinates_init_for_conveer[direction][1] = y + CONVEER_SIZE
-        elif conveer.get_output_diraction() == 2:
-            self.cordinates_init_for_conveer[direction][0] = x + CONVEER_SIZE
-        else:
-            self.cordinates_init_for_conveer[direction][1] = y - CONVEER_SIZE
-
-    def get_count(self):
-        return self.count
-
-    def get_size(self):
-        sizey = (self.rect.bottomleft[1] - self.rect.y)
-        sizex = (self.rect.topright[0] - self.rect.x)
-        return (sizex, sizey)
 
     def update(self, choice, smeshen_x=0, smeshen_y=0):
         if choice == 1:
@@ -179,14 +140,36 @@ class Postroika(pygame.sprite.Sprite):
             return self.orentation
         if choice == 9:
             return self.outputs_diraction
+        if choice == 10:
+            return self.get_ports()
+
+
+    def get_count(self):
+        return self.count
+
+    def get_size(self):
+        sizey = (self.rect.bottomleft[1] - self.rect.y)
+        sizex = (self.rect.topright[0] - self.rect.x)
+        return (sizex, sizey)
 
     def get_id(self):
         return self.id
+
+    def get_ports(self):
+        ports = spisok_postroiki_input_ports[self.id - 10][self.orentation]
+        cordinates_of_open_ports = []
+        if ports is not None:
+            for i in range(len(ports)):
+                if self.input_ports[i] is True:
+                    cordinates_of_open_ports.append(self.rect.center[0] + ports[i][0], self.rect.center[1] + ports[i][1])
+        return cordinates_of_open_ports
+
 
     def rotate(self):
         self.image = pygame.transform.rotate(self.image, 90)
         self.orentation += 1
         self.orentation = self.orentation % 4
+        self.set_ports()
         self.rect = self.image.get_rect()
         self.outputs_diraction = [self.outputs_diraction[-1]] + self.outputs_diraction[:-1]
 
@@ -196,18 +179,60 @@ class Postroika(pygame.sprite.Sprite):
     def get_pos(self):
         return self.rect.center
 
+    def get_init_coord_for_conveer(self, direction):
+        cordinates_init_for_conveer = [[self.rect.left - CONVEER_SIZE / 2, self.rect.center[1]],
+                                       [self.rect.center[0], self.rect.bottom + CONVEER_SIZE / 2],
+                                       [self.rect.right + CONVEER_SIZE / 2, self.rect.center[1]],
+                                       [self.rect.center[0], self.rect.top - CONVEER_SIZE / 2]]
+        return cordinates_init_for_conveer[direction]
+
+    def get_adit_coord_for_conveer(self, last_conveer):
+        x = last_conveer.get_coord()[0]
+        y = last_conveer.get_coord()[1]
+        if last_conveer.get_output_diraction() == 0:
+            x = x - CONVEER_SIZE
+        elif last_conveer.get_output_diraction() == 1:
+            y = y + CONVEER_SIZE
+        elif last_conveer.get_output_diraction() == 2:
+            x = x + CONVEER_SIZE
+        else:
+            y = y - CONVEER_SIZE
+        return [x, y]
+
+    def get_conveer(self, diraction):
+        if self.spisok_spiskov_conveera[diraction] is None:
+            return None
+        last_conveer = self.spisok_spiskov_conveera[diraction]
+        while last_conveer.next is not None:
+            last_conveer = last_conveer.next
+        return last_conveer
+
     def get_cordinates_for_conveer(self, direction):
-        return self.cordinates_init_for_conveer[direction]
+        last_conveer = self.get_conveer(direction)
+        if last_conveer is None:
+            return self.get_init_coord_for_conveer(direction)
+        return self.get_adit_coord_for_conveer(last_conveer)
+
+    def add_conveer_to_spisok(self, direction, conveer):
+        last_conveer = self.get_conveer(direction)
+        if last_conveer is None:
+            self.spisok_spiskov_conveera[direction] = conveer
+        else:
+            last_conveer.next = conveer
 
     def add_new_conveer(self, strelka, objects):
         direction = strelka.get_direction()
-        conveer = Conveer(strelka.get_type(), self.get_cordinates_for_conveer(direction), direction,
-                          self.get_conveer(direction))
+        last_conveer = self.get_conveer(direction)
+        coordinates = self.get_cordinates_for_conveer(direction)
+
+        conveer = Conveer(strelka.get_type(), coordinates, direction, last_conveer)
         if pygame.sprite.spritecollide(conveer, objects, False):
             conveer.kill()
             return None
         self.add_conveer_to_spisok(direction, conveer)
         return conveer
+
+
 
 
 class Ikonka_rescurces(pygame.sprite.Sprite):
@@ -348,6 +373,9 @@ class Conveer(pygame.sprite.Sprite):
     1 - прямой
     2 - влево 
     """
+
+    def get_coord(self):
+        return self.rect.center
 
     def get_type(self):
         return self.type

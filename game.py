@@ -204,6 +204,7 @@ def game():
                         id = postroika.update(2)
                         postroika_na_hud = Button(spisok_postroiki_image[id - 10], (hud_x, 540), postroika.update(8))
                         group_hud.add(postroika_na_hud, vedelenie)
+                        show_ports(group_postroek, group_hud)
                         draw_arrows(postroika, strelki_group, hud_x)
 
                 close_button = Button(img_close, (hud_x, 100))
@@ -312,6 +313,7 @@ def draw_arrows(postroika, strelki_group, hud_x):
             strelki_group.add(Strelki([hud_x, 540], i, 2, postroika))
 
 
+
 def try_to_place(selected_building, group_postroek, zhil_group):
     new_pos = selected_building.rect.center
     selected_building.rect.center = (new_pos[0] // 10 * 10, new_pos[1] // 10 * 10)
@@ -321,7 +323,6 @@ def try_to_place(selected_building, group_postroek, zhil_group):
                 if selected_building.rect.x > zhila.rect.x and selected_building.rect.y > zhila.rect.y and selected_building.rect.bottom < zhila.rect.bottom and selected_building.rect.right < zhila.rect.right:
                     selected_building.set_na_zhile(zhila.get_id())
                     group_postroek.add(selected_building)
-                    selected_building.set_init_coord_for_conveer()
                     return
         selected_building.kill()
     else:
@@ -330,7 +331,6 @@ def try_to_place(selected_building, group_postroek, zhil_group):
             selected_building.kill()
             return
         group_postroek.add(selected_building)
-        selected_building.set_init_coord_for_conveer()
 
 
 def strelka_press(mouse_pos, strelki_group):
@@ -339,6 +339,16 @@ def strelka_press(mouse_pos, strelki_group):
             if pygame.Rect.collidepoint(i.rect, mouse_pos):
                 return i
     return False
+
+def show_ports(postroiki, hud_goup):
+    spisok_all = []
+    for i in postroiki:
+        cord = i.update(10)
+        if len(cord) != 0:
+            spisok_all.extend(i.update(10))
+    for cords in spisok_all:
+        hud_goup.add(Button(img_green_window, cords))
+
 
 
 if __name__ == '__main__':

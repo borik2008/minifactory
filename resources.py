@@ -133,6 +133,22 @@ spisok_strelki_img = [img_left, img_top, img_right]
 """
 spisok_postroiki_outputs_diraction = [[0, 0, 1, 0], [1, 0, 0, 0], [1, 0, 0, 0], [1, 0, 1, 1], [0, 0, 0, 1]]
 
+"""
+assembler - два слева
+miner - отсутствуют входные порты
+constructor - один справа
+splitter - один снизу
+connector - подному слева, снизу, справа
+"""
+spisok_postroiki_input_ports = [
+                                [[(0,0), (0,0)], [(0,0), (0,0)], [(0,0), (0,0)], [(0,0), (0,0)]],
+                                None,
+                                [[(10, 10)], [(-10, -10)], [(-10, -10)], [(-10, -10)]],
+                                [[(0, 28)], [(28, 0)], [(0, -28)], [(-28, 0)]],
+                                [[(0,0), (0,0), (0,0)], [(0,0), (0,0), (0,0)], [(0,0), (0,0), (0,0)], [(0,0), (0,0), (0,0)]]
+                                ]
+
+
 
 spisok_rescurces_img = [ikonka_beton_img, ikonka_iron_img, ikonka_isvestnyak_img, ikonka_kabel_img,
                         ikonka_karkas_img,
