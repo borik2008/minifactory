@@ -6,7 +6,7 @@ HEIGHT = 1080
 SIZESETKAX = 108
 SIZESETKAY = 192
 MUSIC_VOLUME = 0
-CONVEER_SIZE = 15
+CONVEER_SIZE = 30
 
 pygame.init()
 pygame.mixer.init()

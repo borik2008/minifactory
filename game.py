@@ -319,11 +319,9 @@ def draw_arrows(postroika, strelki_group, hud_x):
             strelki_group.add(Strelki([hud_x, 540], i, 1, postroika))
             strelki_group.add(Strelki([hud_x, 540], i, 2, postroika))
 
-
-
 def try_to_place(selected_building, group_postroek, zhil_group):
     new_pos = selected_building.rect.center
-    selected_building.rect.center = (new_pos[0] // 10 * 10, new_pos[1] // 10 * 10)
+    selected_building.rect.center = (new_pos[0] // 30 * 30, new_pos[1] // 30 * 30)
     if selected_building.get_id() == 11:
         for zhila in zhil_group:
             if pygame.Rect.collidepoint(zhila.rect, selected_building.rect.center):
