@@ -174,7 +174,14 @@ def game():
     vedelenie = None
 
     while True:
-        # print(len(group_postroek) + len(group_hud) + len(allSpites) + len(ikonki_rescurces) + len(ikonki_postroek))
+        if time.time() - timer > 1:
+            timer = time.time()
+            for building in group_postroek:
+                building.update(12)
+        for building in group_postroek:
+            building.update(11)
+
+        # print(len(prtroek) + len(group_hud) + len(allSpites) + len(ikonki_rescurces) + len(ikonki_postroek))
         screen.blit(fon_game_img, fon_game_img.get_rect())
         # отображаем кол-во ресурсов для предмета на который мы навелись
         mouse_pos = pygame.mouse.get_pos()
@@ -227,10 +234,10 @@ def game():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 strelka = strelka_press(mouse_pos, strelki_group)
                 if strelka:
-                    conveer = vedelenaya_postroika.add_new_conveer(strelka, objects)
+                    conveer = vedelenaya_postroika.add_new_conveer(strelka, group_postroek)
                     if conveer is not None:
+                        group_postroek.add(conveer)
                         objects.add(conveer)
-                    print(conveer)
 
             # отслеживаем решил ли пользователь переместится по карте
             if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[1] and move_map == False:

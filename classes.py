@@ -105,6 +105,7 @@ class Postroika(pygame.sprite.Sprite):
         self.outputs_diraction = spisok_postroiki_outputs_diraction[id - 10]
         self.spisok_spiskov_conveera = [None, None, None, None]
         self.input_ports = [True, True, True, True]
+        self.resources = 0
 
     """
     napravlenie = 0 нет конвеера
@@ -118,6 +119,19 @@ class Postroika(pygame.sprite.Sprite):
     direction = 2 конвеер вправо
     direction = 3 нонвеер вверх
     """
+
+    def generate_resources(self):
+        if self.id == 11:
+            self.resources = 1
+
+    def send_resources(self):
+        for port in self.spisok_spiskov_conveera:
+            if port is not None:
+                port.resieve_resources(self.resources)
+                self.resources = 0
+
+    def resieve_resources(self, resources):
+        self.resources = resources
 
     def update(self, choice, smeshen_x=0, smeshen_y=0):
         if choice == 1:
@@ -142,7 +156,10 @@ class Postroika(pygame.sprite.Sprite):
             return self.outputs_diraction
         if choice == 10:
             return self.get_ports()
-
+        if choice == 11:
+            self.send_resources()
+        if choice == 12:
+            self.generate_resources()
 
     def get_count(self):
         return self.count
@@ -156,14 +173,15 @@ class Postroika(pygame.sprite.Sprite):
         return self.id
 
     def get_ports(self):
-        ports = spisok_postroiki_input_ports[self.id - 10][self.orentation]
+        all_ports = spisok_postroiki_input_ports[self.id - 10]
         cordinates_of_open_ports = []
-        if ports is not None:
+        if all_ports is not None:
+            ports = all_ports[self.orentation]
             for i in range(len(ports)):
                 if self.input_ports[i] is True:
-                    cordinates_of_open_ports.append(self.rect.center[0] + ports[i][0], self.rect.center[1] + ports[i][1])
+                    cordinates_of_open_ports.append(
+                        (self.rect.center[0] + ports[i][0], self.rect.center[1] + ports[i][1]))
         return cordinates_of_open_ports
-
 
     def rotate(self):
         self.image = pygame.transform.rotate(self.image, 90)
@@ -207,6 +225,12 @@ class Postroika(pygame.sprite.Sprite):
             last_conveer = last_conveer.next
         return last_conveer
 
+    def set_ports(self):
+        ports = spisok_postroiki_input_ports[self.id - 10]
+        if ports is not None:
+            for i in ports[self.orentation]:
+                self.input_port_coordinates = [self.rect.center[0] + i[0], self.rect.center[1] + i[1]]
+
     def get_cordinates_for_conveer(self, direction):
         last_conveer = self.get_conveer(direction)
         if last_conveer is None:
@@ -231,8 +255,6 @@ class Postroika(pygame.sprite.Sprite):
             return None
         self.add_conveer_to_spisok(direction, conveer)
         return conveer
-
-
 
 
 class Ikonka_rescurces(pygame.sprite.Sprite):
@@ -360,7 +382,7 @@ class Conveer(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = pos
         self.diraction = diraction
-        print(self.output_diraction)
+        self.resources = 0
 
     """
     direction = 0 конвеер влево
@@ -392,3 +414,19 @@ class Conveer(pygame.sprite.Sprite):
         if choice == 6:
             self.rect.x = self.rect.x + smeshen_x
             self.rect.y = self.rect.y + smeshen_y
+        if choice == 10:
+            return []
+        if choice == 11:
+            self.send_resources()
+
+    def __str__(self):
+        return "conveer количество ресурсов = " + str(self.resources)
+
+    def send_resources(self):
+        if self.next is not None:
+            self.next.resieve_resources(self.resources)
+            self.resources = 0
+
+    def resieve_resources(self, resources):
+        self.resources = resources
+        print(self)
