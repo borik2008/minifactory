@@ -103,7 +103,7 @@ img_close = pygame.image.load(os.path.join(main_folder, "images/hud/close.png"))
 img_left = pygame.image.load(os.path.join(main_folder, "images/hud/left.png")).convert_alpha()
 img_top = pygame.image.load(os.path.join(main_folder, "images/hud/top.png")).convert_alpha()
 img_right = pygame.image.load(os.path.join(main_folder, "images/hud/right.png")).convert_alpha()
-img_conveer_straight = pygame.image.load(os.path.join(main_folder, "images/conveer_1.png")).convert_alpha()
+img_conveer_straight = pygame.image.load(os.path.join(main_folder, "images/new_conveer_1.png")).convert_alpha()
 img_conveer_corner = pygame.image.load(os.path.join(main_folder, "images/conveer_2.png")).convert_alpha()
 
 img_blue_window = pygame.image.load(os.path.join(main_folder, "images/for_setka/blue_window.png")).convert_alpha()
