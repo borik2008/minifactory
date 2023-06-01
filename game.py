@@ -234,10 +234,14 @@ def game():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 strelka = strelka_press(mouse_pos, strelki_group)
                 if strelka:
-                    conveer = vedelenaya_postroika.add_new_conveer(strelka, group_postroek)
-                    if conveer is not None:
-                        group_postroek.add(conveer)
-                        objects.add(conveer)
+                    if strelka.get_type() != 4:
+                        abrak = vedelenaya_postroika.add_new_conveer(strelka, group_postroek)
+                        conveer = abrak[0]
+                        if conveer is not None:
+                            group_postroek.add(conveer)
+                            objects.add(conveer, abrak[1])
+                    else:
+                        vedelenaya_postroika.delit_conveer(strelka)
 
             # отслеживаем решил ли пользователь переместится по карте
             if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[1] and move_map == False:
@@ -318,6 +322,7 @@ def draw_arrows(postroika, strelki_group, hud_x):
             strelki_group.add(Strelki([hud_x, 540], i, 0, postroika))
             strelki_group.add(Strelki([hud_x, 540], i, 1, postroika))
             strelki_group.add(Strelki([hud_x, 540], i, 2, postroika))
+            strelki_group.add(Strelki([hud_x, 540], i, 1, postroika, 40))
 
 def try_to_place(selected_building, group_postroek, zhil_group):
     new_pos = selected_building.rect.center
@@ -336,6 +341,7 @@ def try_to_place(selected_building, group_postroek, zhil_group):
                 selected_building, zhil_group, False):
             selected_building.kill()
             return
+        selected_building.set_ports()
         group_postroek.add(selected_building)
 
 
@@ -351,9 +357,9 @@ def show_ports(postroiki, hud_goup):
     for i in postroiki:
         cord = i.update(10)
         if len(cord) != 0:
-            spisok_all.extend(i.update(10))
+            spisok_all.extend(cord)
     for cords in spisok_all:
-        hud_goup.add(Button(img_green_window, cords))
+        hud_goup.add(cords)
 
 
 

@@ -113,6 +113,7 @@ class Postroika(pygame.sprite.Sprite):
         self.spisok_spiskov_conveera = [None, None, None, None]
         self.input_ports = [True, True, True, True]
         self.resources = 0
+        self.spisok_ports = []
 
     """
     napravlenie = 0 нет конвеера
@@ -180,21 +181,21 @@ class Postroika(pygame.sprite.Sprite):
         return self.id
 
     def get_ports(self):
-        all_ports = spisok_postroiki_input_ports[self.id - 10]
-        cordinates_of_open_ports = []
-        if all_ports is not None:
-            ports = all_ports[self.orentation]
-            for i in range(len(ports)):
-                if self.input_ports[i] is True:
-                    cordinates_of_open_ports.append(
-                        (self.rect.center[0] + ports[i][0], self.rect.center[1] + ports[i][1]))
-        return cordinates_of_open_ports
+        # all_ports = spisok_postroiki_input_ports[self.id - 10]
+        # cordinates_of_open_ports = []
+        # if all_ports is not None:
+        #     ports = all_ports[self.orentation]
+        #     for i in range(len(ports)):
+        #         if self.input_ports[i] is True:
+        #             cordinates_of_open_ports.append(
+        #                 (self.rect.center[0] + ports[i][0], self.rect.center[1] + ports[i][1]))
+        # return cordinates_of_open_ports
+        return self.spisok_ports
 
     def rotate(self):
         self.image = pygame.transform.rotate(self.image, 90)
         self.orentation += 1
         self.orentation = self.orentation % 4
-        self.set_ports()
         self.rect = self.image.get_rect()
         self.outputs_diraction = [self.outputs_diraction[-1]] + self.outputs_diraction[:-1]
 
@@ -245,7 +246,8 @@ class Postroika(pygame.sprite.Sprite):
         ports = spisok_postroiki_input_ports[self.id - 10]
         if ports is not None:
             for i in ports[self.orentation]:
-                self.input_port_coordinates = [self.rect.center[0] + i[0], self.rect.center[1] + i[1]]
+                self.spisok_ports.append(Port((i[0] + self.rect.center[0], i[1] + self.rect.center[1])))
+
 
     def get_cordinates_for_conveer(self, direction, type):
         last_conveer = self.get_conveer(direction)
@@ -270,8 +272,62 @@ class Postroika(pygame.sprite.Sprite):
         if pygame.sprite.spritecollide(conveer, objects, False):
             conveer.kill()
             return None
+        front_edge = conveer.get_coord()
+        print(direction, conveer.type)
+        conveer_dir = conveer.get_output_diraction()
+        if conveer.type == 1:
+            if conveer_dir == 3:
+                front_edge = front_edge[0], front_edge[1] - CONVEER_SIZE / 4
+            if conveer_dir == 2:
+                front_edge = front_edge[0] + CONVEER_SIZE / 4, front_edge[1]
+            if conveer_dir == 1:
+                front_edge = front_edge[0], front_edge[1] + CONVEER_SIZE / 4
+            if conveer_dir == 0:
+                front_edge = front_edge[0] - CONVEER_SIZE / 4, front_edge[1]
+
+        if conveer.type == 0:
+            if conveer_dir == 3:
+                front_edge = front_edge[0], front_edge[1] - CONVEER_SIZE / 2
+            if conveer_dir == 2:
+                front_edge = front_edge[0] + CONVEER_SIZE / 2, front_edge[1]
+            if conveer_dir == 1:
+                front_edge = front_edge[0], front_edge[1] + CONVEER_SIZE / 2
+            if conveer_dir == 0:
+                front_edge = front_edge[0] - CONVEER_SIZE / 2, front_edge[1]
+
+        if conveer.type == 2:
+            if conveer_dir == 3:
+                front_edge = front_edge[0], front_edge[1] - CONVEER_SIZE / 2
+            if conveer_dir == 2:
+                front_edge = front_edge[0] + CONVEER_SIZE / 2, front_edge[1]
+            if conveer_dir == 1:
+                front_edge = front_edge[0], front_edge[1] + CONVEER_SIZE / 2
+            if conveer_dir == 0:
+                front_edge = front_edge[0] - CONVEER_SIZE / 2, front_edge[1]
+
         self.add_conveer_to_spisok(direction, conveer)
-        return conveer
+        return conveer, Port(front_edge)
+
+
+    def delit_conveer(self, strelka):
+        dir = strelka.get_direction()
+        conveer = self.spisok_spiskov_conveera[dir]
+        while conveer is not None:
+            kill_conveer = conveer
+            conveer = conveer.get_next()
+            kill_conveer.kill()
+        self.spisok_spiskov_conveera[dir] = None
+
+
+class Port(pygame.sprite.Sprite):
+    def __init__(self, pos):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface((3, 3))
+        self.image.fill((255, 0, 0))
+        self.rect = self.image.get_rect()
+        self.rect.center = pos
+
+
 
 
 class Ikonka_rescurces(pygame.sprite.Sprite):
@@ -315,7 +371,7 @@ class Block(pygame.sprite.Sprite):
 
 
 class Strelki(pygame.sprite.Sprite):
-    def __init__(self, pos, direction, type, postroika):
+    def __init__(self, pos, direction, type, postroika, delit=0):
         pygame.sprite.Sprite.__init__(self)
         self.image = spisok_strelki_img[type]
         self.rect = self.image.get_rect()
@@ -324,10 +380,10 @@ class Strelki(pygame.sprite.Sprite):
         self.postroika = postroika
         self.type = type
         if (direction + 1) % 2 == 0:
-            pos[1] = pos[1] + 120 - direction * 60
+            pos[1] = pos[1] + 120 - direction * 60 - (direction // 3) * delit + (direction % 3) * delit
             pos[0] = pos[0] - 25 + 25 * type
         else:
-            pos[0] = pos[0] - 60 + direction * 60
+            pos[0] = pos[0] - 60 - delit + direction * 60 + direction * delit
             pos[1] = pos[1] - 25 + 25 * type
         self.rect.center = pos
         if direction > 1:
@@ -335,6 +391,9 @@ class Strelki(pygame.sprite.Sprite):
                 self.type = 2
             elif type == 2:
                 self.type = 0
+        if delit != 0:
+            self.image = dell_img
+            self.type = 4
 
     def set_img(self, image):
         self.image = image
@@ -446,3 +505,6 @@ class Conveer(pygame.sprite.Sprite):
 
     def resieve_resources(self, resources):
         self.resources = resources
+
+    def get_next(self):
+        return self.next

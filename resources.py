@@ -6,7 +6,7 @@ HEIGHT = 1080
 SIZESETKAX = 108
 SIZESETKAY = 192
 MUSIC_VOLUME = 0
-CONVEER_SIZE = 30
+CONVEER_SIZE = 32
 
 pygame.init()
 pygame.mixer.init()
@@ -111,6 +111,7 @@ img_green_window = pygame.image.load(os.path.join(main_folder, "images/for_setka
 img_purple_window = pygame.image.load(os.path.join(main_folder, "images/for_setka/purple_window.png")).convert_alpha()
 img_red_window = pygame.image.load(os.path.join(main_folder, "images/for_setka/red_window.png")).convert_alpha()
 vedelenie_img = pygame.image.load(os.path.join(main_folder, "images/hud/vedelen.png")).convert_alpha()
+dell_img = pygame.image.load(os.path.join(main_folder, "images/hud/dell.png"))
 
 # зелёный пустота
 # фиолетовый жилы
