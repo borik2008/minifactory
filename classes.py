@@ -111,6 +111,7 @@ class Postroika(pygame.sprite.Sprite):
         self.orentation = 0
         self.outputs_diraction = spisok_postroiki_outputs_diraction[id - 10]
         self.spisok_spiskov_conveera = [None, None, None, None]
+        self.is_posible_build_conveer = [True, True, True, True]
         self.input_ports = [True, True, True, True]
         self.resources = 0
         self.spisok_ports = []
@@ -136,10 +137,15 @@ class Postroika(pygame.sprite.Sprite):
         for port in self.spisok_spiskov_conveera:
             if port is not None:
                 port.resieve_resources(self.resources)
+                if self.resources != 0:
+                    print("постройка отправил ресурс:", self.resources)
                 self.resources = 0
 
+
     def resieve_resources(self, resources):
-        self.resources = resources
+        self.resources += resources
+        if resources != 0:
+            print("постройка получил ресурс:", resources, "всего:", self.resources)
 
     def update(self, choice, smeshen_x=0, smeshen_y=0):
         if choice == 1:
@@ -181,15 +187,10 @@ class Postroika(pygame.sprite.Sprite):
         return self.id
 
     def get_ports(self):
-        # all_ports = spisok_postroiki_input_ports[self.id - 10]
-        # cordinates_of_open_ports = []
-        # if all_ports is not None:
-        #     ports = all_ports[self.orentation]
-        #     for i in range(len(ports)):
-        #         if self.input_ports[i] is True:
-        #             cordinates_of_open_ports.append(
-        #                 (self.rect.center[0] + ports[i][0], self.rect.center[1] + ports[i][1]))
-        # return cordinates_of_open_ports
+        ports = spisok_postroiki_input_ports[self.id - 10]
+        if ports is not None:
+            for i in ports[self.orentation]:
+                self.spisok_ports.append(Port((i[0] + self.rect.center[0], i[1] + self.rect.center[1]), self))
         return self.spisok_ports
 
     def rotate(self):
@@ -238,22 +239,27 @@ class Postroika(pygame.sprite.Sprite):
         if self.spisok_spiskov_conveera[diraction] is None:
             return None
         last_conveer = self.spisok_spiskov_conveera[diraction]
-        while last_conveer.next is not None:
-            last_conveer = last_conveer.next
+        while last_conveer.get_next() is not None:
+            last_conveer = last_conveer.get_next()
         return last_conveer
 
     def set_ports(self):
         ports = spisok_postroiki_input_ports[self.id - 10]
         if ports is not None:
             for i in ports[self.orentation]:
-                self.spisok_ports.append(Port((i[0] + self.rect.center[0], i[1] + self.rect.center[1])))
+                self.spisok_ports.append(Port((i[0] + self.rect.center[0], i[1] + self.rect.center[1]), self))
+        return self.spisok_ports
 
 
     def get_cordinates_for_conveer(self, direction, type):
         last_conveer = self.get_conveer(direction)
+
         if last_conveer is None:
             return self.get_init_coord_for_conveer(direction, type)
-        return self.get_adit_coord_for_conveer(last_conveer, type)
+        if isinstance(last_conveer, Conveer):
+            return self.get_adit_coord_for_conveer(last_conveer, type)
+        return None
+
 
     def add_conveer_to_spisok(self, direction, conveer):
         last_conveer = self.get_conveer(direction)
@@ -262,8 +268,10 @@ class Postroika(pygame.sprite.Sprite):
         else:
             last_conveer.next = conveer
 
-    def add_new_conveer(self, strelka, objects):
+    def add_new_conveer(self, strelka, objects, input_ports_group):
         direction = strelka.get_direction()
+        if not self.is_posible_build_conveer[direction]:
+            return None
         type = strelka.get_type()
         last_conveer = self.get_conveer(direction)
         coordinates = self.get_cordinates_for_conveer(direction, type)
@@ -273,40 +281,29 @@ class Postroika(pygame.sprite.Sprite):
             conveer.kill()
             return None
         front_edge = conveer.get_coord()
-        print(direction, conveer.type)
         conveer_dir = conveer.get_output_diraction()
+        size = CONVEER_SIZE / 2
         if conveer.type == 1:
-            if conveer_dir == 3:
-                front_edge = front_edge[0], front_edge[1] - CONVEER_SIZE / 4
-            if conveer_dir == 2:
-                front_edge = front_edge[0] + CONVEER_SIZE / 4, front_edge[1]
-            if conveer_dir == 1:
-                front_edge = front_edge[0], front_edge[1] + CONVEER_SIZE / 4
-            if conveer_dir == 0:
-                front_edge = front_edge[0] - CONVEER_SIZE / 4, front_edge[1]
+            size = CONVEER_SIZE / 4
 
-        if conveer.type == 0:
-            if conveer_dir == 3:
-                front_edge = front_edge[0], front_edge[1] - CONVEER_SIZE / 2
-            if conveer_dir == 2:
-                front_edge = front_edge[0] + CONVEER_SIZE / 2, front_edge[1]
-            if conveer_dir == 1:
-                front_edge = front_edge[0], front_edge[1] + CONVEER_SIZE / 2
-            if conveer_dir == 0:
-                front_edge = front_edge[0] - CONVEER_SIZE / 2, front_edge[1]
+        if conveer_dir == 3:
+            front_edge = front_edge[0], front_edge[1] - size
+        if conveer_dir == 2:
+            front_edge = front_edge[0] + size, front_edge[1]
+        if conveer_dir == 1:
+            front_edge = front_edge[0], front_edge[1] + size
+        if conveer_dir == 0:
+            front_edge = front_edge[0] - size, front_edge[1]
 
-        if conveer.type == 2:
-            if conveer_dir == 3:
-                front_edge = front_edge[0], front_edge[1] - CONVEER_SIZE / 2
-            if conveer_dir == 2:
-                front_edge = front_edge[0] + CONVEER_SIZE / 2, front_edge[1]
-            if conveer_dir == 1:
-                front_edge = front_edge[0], front_edge[1] + CONVEER_SIZE / 2
-            if conveer_dir == 0:
-                front_edge = front_edge[0] - CONVEER_SIZE / 2, front_edge[1]
-
+        for port in input_ports_group:
+            if port.rect.collidepoint(front_edge):
+                potrebitel = port.get_owner()
+                conveer.next = potrebitel
+                print("есть подкл")
+                self.is_posible_build_conveer[direction] = False
         self.add_conveer_to_spisok(direction, conveer)
-        return conveer, Port(front_edge)
+
+        return conveer
 
 
     def delit_conveer(self, strelka):
@@ -318,14 +315,21 @@ class Postroika(pygame.sprite.Sprite):
             kill_conveer.kill()
         self.spisok_spiskov_conveera[dir] = None
 
+    def get_next(self):
+        return None
+
 
 class Port(pygame.sprite.Sprite):
-    def __init__(self, pos):
+    def __init__(self, pos, owner):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((3, 3))
+        self.image = pygame.Surface((15, 15))
         self.image.fill((255, 0, 0))
         self.rect = self.image.get_rect()
         self.rect.center = pos
+        self.owner = owner
+
+    def get_owner(self):
+        return self.owner
 
 
 
@@ -416,21 +420,27 @@ class Strelki(pygame.sprite.Sprite):
         return self.postroika.get_pos()
 
 
+
 class Conveer(pygame.sprite.Sprite):
-    def __init__(self, type, pos, diraction, previous=None, next=None):
+    def __init__(self, type, pos, diraction, previous=None, template=False, next=None):
         pygame.sprite.Sprite.__init__(self)
         self.type = type
+        self.id = 0
         self.previous = previous
         self.next = next
         if previous is not None:
             diraction = previous.get_output_diraction()
         if type == 1:
             self.image = img_conveer_straight
+            if template:
+                self.image = conveer_1_template_img
             self.output_diraction = diraction
             if diraction == 0 or diraction == 2:
                 self.image = pygame.transform.rotate(self.image, 90)
         else:
             self.image = img_conveer_corner
+            if template:
+                self.image = conveer_2_template_img
             if type == 0:
                 if diraction == 2:
                     self.image = pygame.transform.rotate(self.image, -90)
@@ -501,10 +511,13 @@ class Conveer(pygame.sprite.Sprite):
     def send_resources(self):
         if self.next is not None:
             self.next.resieve_resources(self.resources)
+            #print("отправил ресурс:", self.resources)
             self.resources = 0
+
 
     def resieve_resources(self, resources):
         self.resources = resources
+        #print("конвеер получмл ресурс:", resources, "всего русурсов", self.resources)
 
     def get_next(self):
         return self.next

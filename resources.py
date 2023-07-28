@@ -112,6 +112,8 @@ img_purple_window = pygame.image.load(os.path.join(main_folder, "images/for_setk
 img_red_window = pygame.image.load(os.path.join(main_folder, "images/for_setka/red_window.png")).convert_alpha()
 vedelenie_img = pygame.image.load(os.path.join(main_folder, "images/hud/vedelen.png")).convert_alpha()
 dell_img = pygame.image.load(os.path.join(main_folder, "images/hud/dell.png"))
+conveer_1_template_img = pygame.image.load(os.path.join(main_folder, "images/new_conveer_1_template.png"))
+conveer_2_template_img = pygame.image.load(os.path.join(main_folder, "images/conveer_2_template.png"))
 
 # зелёный пустота
 # фиолетовый жилы
@@ -140,12 +142,13 @@ miner - отсутствуют входные порты
 constructor - один справа
 splitter - один снизу
 connector - подному слева, снизу, справа
+против часовой стрелки
 """
 spisok_postroiki_input_ports = [
-                                [[(0,0), (0,0)], [(0,0), (0,0)], [(0,0), (0,0)], [(0,0), (0,0)]],
+                                [[(-80,-25), (-80,17)], [(25,80), (-17,80)], [(80,-17), (80,25)], [(-25,-80), (17,-80)]],
                                 None,
-                                [[(10, 10)], [(-10, -10)], [(-10, -10)], [(-10, -10)]],
-                                [[(0, 28)], [(28, 0)], [(0, -28)], [(-28, 0)]],
+                                [[(32, 0)], [(0, -32)], [(-32, 0)], [(32, 0)]],
+                                [[(0, 32)], [(32, 0)], [(0, -32)], [(-32, 0)]],
                                 [[(0,0), (0,0), (0,0)], [(0,0), (0,0), (0,0)], [(0,0), (0,0), (0,0)], [(0,0), (0,0), (0,0)]]
                                 ]
 

@@ -161,6 +161,7 @@ def game():
     hud_down = Button(hud_down_img, (WIDTH / 2, HEIGHT / 2))
     group_postroek = pygame.sprite.Group()
     group_hud = pygame.sprite.Group()
+    input_ports_group = pygame.sprite.Group()
     strelki_group = pygame.sprite.Group()
     # добовляем в группы спрайтов спрайты
     allSpites.add(hud_up, hud_down, ikonka_count_resources_001, ikonka_count_resources_010, ikonka_count_resources_100,
@@ -172,11 +173,13 @@ def game():
     move_map = False
     hud = False
     vedelenie = None
+    is_template_conveer = False
 
     while True:
         if time.time() - timer > 1:
             timer = time.time()
             for building in group_postroek:
+                print(building.id, building.resources)
                 building.update(12)
         for building in group_postroek:
             building.update(11)
@@ -191,31 +194,49 @@ def game():
                 ikonka_count_resources_001.set_img(numbers_image[i.update(1) % 10])
                 ikonka_count_resources_010.set_img(numbers_image[i.update(1) % 100 // 10])
                 ikonka_count_resources_100.set_img(numbers_image[i.update(1) // 100])
+        current_events = pygame.event.get()
+        if hud and pygame.MOUSEBUTTONDOWN not in current_events:
+            if is_template_conveer and conveer_teamplate is not None:
+                conveer_teamplate.kill()
+                conveer_teamplate = None
+            for strelka in strelki_group:
+                if strelka.rect.collidepoint(mouse_pos):
+                    strelka_type = strelka.get_type()
+                    diraction = strelka.get_direction()
+                    last_conveer = vedelenaya_postroika.get_conveer(diraction)
+                    cordinates = vedelenaya_postroika.get_cordinates_for_conveer(diraction, strelka_type)
+                    if cordinates is None:
+                        break
+                    conveer_teamplate = Conveer(strelka_type, cordinates, diraction, last_conveer, True)
+                    objects.add(conveer_teamplate)
+                    is_template_conveer = True
         # проверяем нажата ли какая нибудь кнопка
-        for event in pygame.event.get():
+        for event in current_events:
             if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[2] and captured:
                 selected_building.rotate()
             # отрисовывать сдесь меню постройки
             if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[2] and not hud and not captured:
 
-                hud = True
-                hud_x, hud_image = get_x_conrdinate_hud(mouse_pos)
 
-                hud_postroika = Button(hud_image, (hud_x, 540))
-                group_hud.add(hud_postroika)
                 for postroika in group_postroek:
-                    if pygame.Rect.collidepoint(postroika.rect, mouse_pos):
+                    if pygame.Rect.collidepoint(postroika.rect, mouse_pos) and isinstance(postroika, Postroika):
+                        hud = True
                         vedelenaya_postroika = postroika
                         vedelenie = Button(vedelenie_img, postroika.rect.center)
                         objects.add(vedelenie)
                         id = postroika.update(2)
-                        postroika_na_hud = Button(spisok_postroiki_image[id - 10], (hud_x, 540), postroika.update(8))
-                        group_hud.add(postroika_na_hud, vedelenie)
-                        show_ports(group_postroek, group_hud)
-                        draw_arrows(postroika, strelki_group, hud_x)
+                        rotate_count = postroika.update(8)
 
-                close_button = Button(img_close, (hud_x, 100))
-                group_hud.add(close_button)
+                if hud:
+                    hud_x, hud_image = get_x_conrdinate_hud(mouse_pos)
+                    hud_postroika = Button(hud_image, (hud_x, 540))
+                    group_hud.add(hud_postroika)
+                    draw_arrows(vedelenaya_postroika, strelki_group, hud_x)
+                    postroika_na_hud = Button(spisok_postroiki_image[id - 10], (hud_x, 540), rotate_count)
+                    group_hud.add(postroika_na_hud, vedelenie)
+                    show_ports(group_postroek, group_hud)
+                    close_button = Button(img_close, (hud_x, 100))
+                    group_hud.add(close_button)
 
             elif hud and pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[2]:
                 for object in strelki_group:
@@ -235,11 +256,11 @@ def game():
                 strelka = strelka_press(mouse_pos, strelki_group)
                 if strelka:
                     if strelka.get_type() != 4:
-                        abrak = vedelenaya_postroika.add_new_conveer(strelka, group_postroek)
-                        conveer = abrak[0]
+                        conveer = vedelenaya_postroika.add_new_conveer(strelka, group_postroek, input_ports_group)
                         if conveer is not None:
                             group_postroek.add(conveer)
-                            objects.add(conveer, abrak[1])
+                            objects.add(conveer)
+
                     else:
                         vedelenaya_postroika.delit_conveer(strelka)
 
@@ -256,7 +277,7 @@ def game():
             # пытаемся разместить обект по сетке
             if event.type == pygame.MOUSEBUTTONUP and pygame.mouse.get_pressed()[0] == False and captured:
                 captured = False
-                try_to_place(selected_building, group_postroek, zhil_group)
+                try_to_place(selected_building, group_postroek, zhil_group, input_ports_group)
 
             # когда пользователь нажмёт ESC то появится окно (yes/no) для выхода
             if event.type == pygame.KEYDOWN:
@@ -324,7 +345,7 @@ def draw_arrows(postroika, strelki_group, hud_x):
             strelki_group.add(Strelki([hud_x, 540], i, 2, postroika))
             strelki_group.add(Strelki([hud_x, 540], i, 1, postroika, 40))
 
-def try_to_place(selected_building, group_postroek, zhil_group):
+def try_to_place(selected_building, group_postroek, zhil_group, input_ports_group):
     new_pos = selected_building.rect.center
     selected_building.rect.x = new_pos[0] // 32 * 32
     selected_building.rect.y = new_pos[1] // 32 * 32
@@ -341,7 +362,8 @@ def try_to_place(selected_building, group_postroek, zhil_group):
                 selected_building, zhil_group, False):
             selected_building.kill()
             return
-        selected_building.set_ports()
+        for port in selected_building.set_ports():
+            input_ports_group.add(port)
         group_postroek.add(selected_building)
 
 
